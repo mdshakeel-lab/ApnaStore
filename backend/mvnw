@@ -1,0 +1,58 @@
+#!/bin/sh
+# ----------------------------------------------------------------------------
+# Apache Maven Wrapper Startup Shell Script for Unix/Linux/macOS
+# ----------------------------------------------------------------------------
+
+WRAPPER_VERSION="3.2.0"
+WRAPPER_JAR=".mvn/wrapper/maven-wrapper.jar"
+
+# Resolve script base directory
+PRG="$0"
+while [ -h "$PRG" ]; do
+  ls=`ls -ld "$PRG"`
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '/.*' > /dev/null; then
+    PRG="$link"
+  else
+    PRG=`dirname "$PRG"`/"$link"
+  fi
+done
+SAVED="`pwd`"
+cd "`dirname \"$PRG\"`" >/dev/null
+PRGDIR="`pwd`"
+cd "$SAVED" >/dev/null
+
+MAVEN_PROJECTBASEDIR="$PRGDIR"
+
+# Locate Java
+if [ -n "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+  JAVACMD="$JAVA_HOME/bin/java"
+else
+  JAVACMD="java"
+fi
+
+WRAPPER_JAR_PATH="$MAVEN_PROJECTBASEDIR/$WRAPPER_JAR"
+
+# Download maven-wrapper.jar if missing
+if [ ! -f "$WRAPPER_JAR_PATH" ]; then
+  mkdir -p "$MAVEN_PROJECTBASEDIR/.mvn/wrapper"
+  echo "[*] Downloading Maven Wrapper JAR..."
+  JAR_URL="https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/$WRAPPER_VERSION/maven-wrapper-$WRAPPER_VERSION.jar"
+  if command -v curl >/dev/null 2>&1; then
+    curl -o "$WRAPPER_JAR_PATH" -fsSL "$JAR_URL"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -q -O "$WRAPPER_JAR_PATH" "$JAR_URL"
+  elif command -v python3 >/dev/null 2>&1; then
+    python3 -c "import urllib.request; urllib.request.urlretrieve('$JAR_URL', '$WRAPPER_JAR_PATH')"
+  else
+    echo "Error: Could not find curl, wget or python3 to download Maven Wrapper JAR." >&2
+    exit 1
+  fi
+fi
+
+# Execute Maven Wrapper Main Class
+exec "$JAVACMD" \
+  -Dmaven.multiModuleProjectDirectory="$MAVEN_PROJECTBASEDIR" \
+  -cp "$WRAPPER_JAR_PATH" \
+  org.apache.maven.wrapper.MavenWrapperMain \
+  "$@"

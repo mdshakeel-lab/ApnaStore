@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apna Store | Royal Ethnic Couture, Lehengas & Sherwanis</title>
+  <meta name="description"
+    content="Explore royal Indian ethnic couture, handloom Kanjivaram silk sarees, zardozi bridal lehengas, velvet sherwanis, and Kundan jewelry at Apna Store." />
+
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="announcement-bar">
+    <span>ROYAL HERITAGE '26</span> Complimentary Express Shipping on Orders Over ₹3,000 | Use Code
+    <strong>APNA20</strong> for 20% Off Ethnic Couture
+  </div>
+
+  <!-- Main Sticky Header & Navigation -->
+  <header class="navbar-header">
+    <div class="container navbar-container">
+
+      <!-- Brand Identity -->
+      <a href="#" class="brand-logo" id="brand-logo-link">
+        <span class="brand-name">APNA STORE</span>
+        <span class="brand-tagline">ROYAL COUTURE</span>
+      </a>
+
+      <!-- Live Search Bar -->
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="search-input" class="search-input"
+          placeholder="Search lehengas, sherwanis, sarees, Kundan..." aria-label="Search clothing catalog" />
+      </div>
+
+      <!-- Quick Action Badges (Theme Toggle, Wishlist & Cart) -->
+      <div class="nav-actions">
+        <button class="icon-btn" id="theme-toggle-btn" title="Toggle Light / Dark Mode" aria-label="Toggle Theme">
+          <i class="fas fa-moon" id="theme-toggle-icon"></i>
+        </button>
+
+        <button class="icon-btn" id="open-wishlist-btn" title="Saved Items" aria-label="Wishlist">
+          <i class="far fa-heart"></i>
+          <span class="badge-count" id="wishlist-badge">0</span>
+        </button>
+
+        <button class="icon-btn" id="open-cart-btn" title="Shopping Cart" aria-label="Shopping Cart">
+          <i class="fas fa-shopping-bag"></i>
+          <span class="badge-count" id="cart-badge">0</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Banner Section -->
+    <section class="hero-section">
+      <div class="container hero-grid">
+
+        <div class="hero-content">
+          <div class="hero-pill">
+            <i class="fas fa-crown"></i> Royal Heritage Collection 2026
+          </div>
+          <h1 class="hero-title">
+            Masterpieces of <span>Indian Couture</span> & Heritage.
+          </h1>
+          <p class="hero-subtitle">
+            Immerse yourself in handcrafted Zardozi silk lehengas, royal velvet wedding sherwanis, pure Kanjivaram
+            sarees, and artisanal Kundan jewel sets.
+          </p>
+          <div class="hero-cta-group">
+            <a href="#shop-section" class="btn-primary">
+              Explore Royal Heritage <i class="fas fa-arrow-right"></i>
+            </a>
+            <a href="#shop-section" class="btn-outline">
+              Bridal Lehengas
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-image-wrapper">
+          <div class="hero-image-card">
+            <img src="./assets/indian_hero_banner.png" alt="Apna Store Royal Indian Fashion Banner" />
+            <div class="hero-floating-badge">
+              <div class="hero-badge-icon">
+                <i class="fas fa-gem"></i>
+              </div>
+              <div>
+                <div style="font-weight: 700; font-size: 0.95rem;">Handcrafted Zardozi Artistry</div>
+                <div style="color: var(--text-muted); font-size: 0.8rem;">100% Certified Mulberry Silk & Gold Zari</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Category Filter Bar Section -->
+    <section class="category-section">
+      <div class="container">
+        <div class="category-list" id="category-pills-container">
+          <!-- Populated dynamically by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Shop Catalog Layout Section -->
+    <section class="shop-layout" id="shop-section">
+      <div class="container">
+
+        <!-- Controls Top Header -->
+        <div class="shop-controls">
+          <div class="results-count">
+            Showing <strong id="results-count-number">0</strong> Royal Ethnic Pieces
+          </div>
+          <div class="sort-dropdown">
+            <label for="sort-select"
+              style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">Sort By:</label>
+            <select id="sort-select" class="sort-select">
+              <option value="featured">Featured Runway</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="rating">Highest Rated</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="shop-grid-container">
+
+          <!-- Filter Sidebar -->
+          <aside class="filter-sidebar">
+
+            <!-- Size Filter -->
+            <div class="filter-group">
+              <div class="filter-title"><i class="fas fa-ruler-combined"></i> Size</div>
+              <div class="size-chips">
+                <button class="size-chip" data-size="XS">XS</button>
+                <button class="size-chip" data-size="S">S</button>
+                <button class="size-chip" data-size="M">M</button>
+                <button class="size-chip" data-size="L">L</button>
+                <button class="size-chip" data-size="XL">XL</button>
+              </div>
+            </div>
+
+            <!-- Price Range Filter -->
+            <div class="filter-group">
+              <div class="filter-title"><i class="fas fa-tag"></i> Max Price</div>
+              <div class="price-range-wrapper">
+                <input type="range" id="price-range-slider" class="range-slider" min="200" max="1200" step="50"
+                  value="1200" />
+                <div class="price-values">
+                  <span>₹200</span>
+                  <span id="max-price-display" style="font-weight: 700; color: var(--gold-primary);">₹1200</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Royal Guarantee Badge -->
+            <div
+              style="margin-top: 2rem; background: rgba(212, 175, 55, 0.05); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-gold);">
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--gold-primary); margin-bottom: 0.5rem;">
+                <i class="fas fa-shield-alt"></i> Silk Mark & Authenticity
+              </div>
+              <p style="font-size: 0.775rem; color: var(--text-muted);">
+                Each bridal outfit includes Silk Mark certification and custom wooden wardrobe garment storage box.
+              </p>
+            </div>
+
+          </aside>
+
+          <!-- Main Product Cards Grid -->
+          <div class="products-grid" id="products-grid">
+            <!-- Rendered dynamically by app.js -->
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Testimonials / Customer Reviews -->
+    <section class="testimonials-section">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-subtitle">Bridal & Royal Client Reviews</div>
+          <h2 class="section-title">Loved by Royalty & Connoisseurs</h2>
+        </div>
+        <div class="reviews-grid" id="reviews-grid">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Newsletter Banner -->
+    <section style="padding: 4rem 0; background: var(--bg-surface); border-top: 1px solid var(--border-subtle);">
+      <div class="container" style="max-width: 700px; text-align: center;">
+        <i class="fas fa-envelope-open-text"
+          style="font-size: 2.5rem; color: var(--gold-primary); margin-bottom: 1rem;"></i>
+        <h3 style="font-family: var(--font-serif); font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Join the
+          Royal Atelier Circle</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+          Subscribe to receive VIP invitations to bespoke bridal trunk shows and 15% off your first royal couture order.
+        </p>
+        <form
+          onsubmit="event.preventDefault(); (window.apnaStoreApp || window.lumiereApp).showToast('Thank you for joining Apna Store Club', 'fa-crown');"
+          style="display: flex; gap: 0.75rem;">
+          <input type="email" placeholder="Enter your email address" required
+            style="flex: 1; padding: 0.85rem 1.25rem; background: var(--input-bg); border: 1px solid var(--border-subtle); border-radius: var(--radius-full); color: var(--text-primary); box-shadow: var(--shadow-sm);" />
+          <button type="submit" class="btn-primary" style="padding: 0.85rem 1.75rem;">Subscribe</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- Slide-out Shopping Cart Drawer -->
+  <div class="drawer-backdrop" id="cart-drawer-backdrop">
+    <div class="drawer-panel">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <i class="fas fa-shopping-bag"></i> Shopping Bag
+        </div>
+        <button class="close-btn" aria-label="Close Shopping Bag"><i class="fas fa-times"></i></button>
+      </div>
+
+      <!-- Free Shipping Meter -->
+      <div class="shipping-progress-box">
+        <div class="progress-text" id="free-shipping-text">
+          Spend <strong>₹3,000.00</strong> more to unlock Free Express Shipping
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="free-shipping-bar-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Cart Items List -->
+      <div class="drawer-content" id="cart-drawer-content">
+        <!-- Rendered by app.js -->
+      </div>
+
+      <!-- Drawer Footer & Checkout -->
+      <div class="drawer-footer" id="cart-drawer-footer">
+        <div class="promo-box">
+          <input type="text" id="promo-input" class="promo-input" placeholder="Promo Code (e.g. APNA20)" />
+          <button class="btn-apply-promo" id="apply-promo-btn">Apply</button>
+        </div>
+
+        <div class="summary-rows">
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="cart-subtotal">₹0.00</span>
+          </div>
+          <div class="summary-row">
+            <span>Complimentary Shipping</span>
+            <span style="color: #10b981;">FREE</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span id="cart-total">₹0.00</span>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="proceed-checkout-btn" style="width: 100%;">
+          Proceed to Checkout <i class="fas fa-lock"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide-out Wishlist Drawer -->
+  <div class="drawer-backdrop" id="wishlist-drawer-backdrop">
+    <div class="drawer-panel">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <i class="fas fa-heart"></i> Saved Wishlist
+        </div>
+        <button class="close-btn" aria-label="Close Wishlist"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="drawer-content" id="wishlist-drawer-content">
+        <!-- Rendered by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick View Product Detail Modal -->
+  <div class="modal-backdrop" id="quickview-modal-backdrop">
+    <div class="modal-card">
+      <button class="modal-close-btn close-btn" aria-label="Close Product Detail"><i class="fas fa-times"></i></button>
+
+      <div class="modal-gallery">
+        <img id="modal-product-img" src="" alt="Product Detail Preview" />
+      </div>
+
+      <div class="modal-details">
+        <span
+          style="font-size: 0.75rem; text-transform: uppercase; color: var(--gold-primary); letter-spacing: 0.1em;">Atelier
+          Heritage Selection</span>
+        <h2 class="modal-title" id="modal-product-title">Product Title</h2>
+        <div class="modal-price" id="modal-product-price">₹0</div>
+        <p class="modal-desc" id="modal-product-desc">Description text...</p>
+
+        <!-- Size Swatch Selection -->
+        <div class="swatch-group">
+          <span class="swatch-label">Select Size</span>
+          <div class="size-chips" id="modal-size-chips"></div>
+        </div>
+
+        <!-- Color Swatch Selection -->
+        <div class="swatch-group">
+          <span class="swatch-label">Select Color</span>
+          <div class="color-swatches" id="modal-color-swatches"></div>
+        </div>
+
+        <button class="btn-primary" id="modal-add-cart-btn" style="margin-top: auto; width: 100%;">
+          <i class="fas fa-shopping-bag"></i> Add to Shopping Bag
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi-Step Checkout Modal -->
+  <div class="modal-backdrop" id="checkout-modal-backdrop">
+    <div class="modal-card checkout-card">
+      <button class="modal-close-btn close-btn" aria-label="Close Checkout"><i class="fas fa-times"></i></button>
+
+      <h3
+        style="font-family: var(--font-serif); color: var(--gold-primary); margin-bottom: 1.5rem; text-align: center;">
+        Royal Express Checkout</h3>
+
+      <!-- Step Indicators -->
+      <div class="checkout-steps-bar">
+        <div class="step-item active" id="step-indicator-1">
+          <div class="step-num">1</div> Shipping Address
+        </div>
+        <div class="step-item" id="step-indicator-2">
+          <div class="step-num">2</div> Payment Method
+        </div>
+      </div>
+
+      <!-- Step 1 Form -->
+      <form id="checkout-step-1">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="checkout-name" class="form-input" placeholder="Priya Sharma" required />
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-input" placeholder="priya@royalcouture.com" required />
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Shipping Address</label>
+            <input type="text" class="form-input" placeholder="12 Palace Road, Civil Lines" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <input type="text" class="form-input" placeholder="New Delhi" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Postal Code</label>
+            <input type="text" class="form-input" placeholder="110001" required />
+          </div>
+        </div>
+        <button class="btn-primary" id="to-step-2-btn" style="width: 100%;">Continue to Payment <i
+            class="fas fa-arrow-right"></i></button>
+      </form>
+
+      <!-- Step 2 Form -->
+      <form id="checkout-step-2" style="display: none;">
+        <div
+          style="background: rgba(212, 175, 55, 0.08); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-gold); margin-bottom: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--gold-primary);">
+          <i class="fas fa-lock"></i> 256-Bit Encrypted Simulation Payment
+        </div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="form-label">Card Number</label>
+            <input type="text" class="form-input" placeholder="4532 •••• •••• 8892" value="4532 9812 4431 8892"
+              required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Expiry</label>
+            <input type="text" class="form-input" placeholder="12/28" value="12/28" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">CVV</label>
+            <input type="password" class="form-input" placeholder="•••" value="888" required />
+          </div>
+        </div>
+        <button class="btn-primary" id="submit-order-btn" style="width: 100%;">
+          Complete Purchase & Place Order <i class="fas fa-check-circle"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order Receipt / Success Modal -->
+  <div class="modal-backdrop" id="receipt-modal-backdrop">
+    <div class="modal-card checkout-card" style="text-align: center;">
+      <button class="modal-close-btn close-btn" aria-label="Close Receipt"><i class="fas fa-times"></i></button>
+
+      <i class="fas fa-check-circle" style="font-size: 3.5rem; color: #10b981; margin-bottom: 1rem;"></i>
+      <h3 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 0.5rem;">Order Confirmed</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+        Thank you for purchasing with Apna Store. Your digital certificate of authenticity and tracking number have been
+        generated.
+      </p>
+
+      <div
+        style="background: var(--bg-card); border: 1px solid var(--border-gold); padding: 1.5rem; border-radius: var(--radius-md); text-align: left; margin-bottom: 1.5rem;">
+        <div
+          style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+          <span>Order Number: <strong id="receipt-order-id"
+              style="color: var(--text-primary);">APNA-000000</strong></span>
+          <span id="receipt-date">Aug 6, 2026</span>
+        </div>
+        <div id="receipt-items-list" style="margin: 1rem 0;"></div>
+        <div
+          style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; border-top: 1px solid var(--border-gold); padding-top: 0.75rem;">
+          <span>Amount Paid:</span>
+          <span id="receipt-total" style="color: var(--gold-primary);">₹0.00</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem;">
+        <button class="btn-outline" id="print-receipt-btn" style="flex: 1;"><i class="fas fa-print"></i> Print
+          Invoice</button>
+        <button class="btn-primary" onclick="(window.apnaStoreApp || window.lumiereApp).closeAllModals();"
+          style="flex: 1;">Return to Boutique</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+
+        <div>
+          <div class="brand-logo">
+            <span class="brand-name">APNA STORE</span>
+            <span class="brand-tagline">ROYAL COUTURE</span>
+          </div>
+          <p class="footer-brand-desc">
+            Pioneering luxury Indian ethnic heritage through master craftsmen, pure Mulberry raw silks, Zardozi
+            embroidery, and regal jewelry.
+          </p>
+        </div>
+
+        <div>
+          <h5 class="footer-heading">Royal Collections</h5>
+          <ul class="footer-links">
+            <li><a href="#shop-section">Bridal Lehengas</a></li>
+            <li><a href="#shop-section">Velvet Sherwanis</a></li>
+            <li><a href="#shop-section">Kanjivaram Silk Sarees</a></li>
+            <li><a href="#shop-section">Gota Patti Anarkalis</a></li>
+            <li><a href="#shop-section">Kundan & Pearl Jewelry</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h5 class="footer-heading">Client Services</h5>
+          <ul class="footer-links">
+            <li><a href="#">Complimentary Global Shipping</a></li>
+            <li><a href="#">Silk Mark Authenticity</a></li>
+            <li><a href="#">Custom Bridal Fitting</a></li>
+            <li><a href="#">Book Royal Appointment</a></li>
+            <li><a href="#">Track Order Status</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h5 class="footer-heading">Follow The House</h5>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Subscribe for private
+            invitations to royal bridal launches.</p>
+          <div style="display: flex; gap: 1rem; font-size: 1.2rem; color: var(--gold-primary);">
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+            <a href="#" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 Apna Store. All rights reserved.</div>
+        <div style="display: flex; gap: 1.5rem;">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Settings</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Module Script -->
+  <script type="module" src="./app.js"></script>
+</body>
+
+</html>

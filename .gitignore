@@ -1,0 +1,69 @@
+# ==============================================================================
+# Apna Store - Git Ignore Configuration
+# Covers Java / Spring Boot, Maven, IDEs, OS files, and Frontend assets
+# ==============================================================================
+
+# Compiled Java Bytecode & Build Output
+*.class
+target/
+backend/target/
+build/
+out/
+bin/
+backend/com/apnastore/*.class
+
+# Packaged Binaries / Archives
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# Maven Temporary Files
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Logs & Runtime Diagnostics
+*.log
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+application-local.properties
+application-local.yml
+application-local.yaml
+
+# IDE & Editor Configuration
+.vscode/
+!.vscode/settings.json
+.idea/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+.history/
+*.sublime-project
+*.sublime-workspace
+
+# Operating System Generated Files
+Thumbs.db
+Desktop.ini
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# User Uploads & Temporary Scratch
+uploads/
+scratch/
+temp/
+tmp/
