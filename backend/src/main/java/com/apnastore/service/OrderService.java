@@ -1,43 +1,67 @@
 package com.apnastore.service;
 
-import com.apnastore.model.OrderRequest;
-import com.apnastore.model.OrderResponse;
-import com.apnastore.model.Product;
+import com.apnastore.model.*;
+import com.apnastore.repository.OrderRepository;
+import com.apnastore.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
+@Transactional
 public class OrderService {
 
     @Autowired
-    private ProductService productService;
+    private OrderRepository orderRepository;
 
-    private final Map<String, OrderResponse> orderDatabase = new HashMap<>();
+    @Autowired
+    private ProductRepository productRepository;
 
     public OrderResponse createOrder(OrderRequest request) {
-        String orderId = "APNA-" + (100000 + new Random().nextInt(900000));
-        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("MMM dd, yyyy"));
+        String orderNumber = "APNA-" + (100000 + new Random().nextInt(900000));
+        String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("MMM dd, yyyy"));
+
+        Order order = new Order();
+        order.setOrderNumber(orderNumber);
+        order.setCustomerName(request.getFullName() != null ? request.getFullName() : "Valued Customer");
+        order.setEmail(request.getEmail());
+        order.setPhone(request.getPhone());
+        order.setAddress(request.getAddress());
+        order.setCity(request.getCity());
+        order.setPostalCode(request.getPostalCode());
+        order.setPaymentMethod(request.getPaymentMethod() != null ? request.getPaymentMethod() : "Credit Card");
+        order.setPromoCode(request.getPromoCode());
 
         double subtotal = 0.0;
         List<OrderResponse.ProductSummary> summaryList = new ArrayList<>();
 
         if (request.getItems() != null) {
-            for (OrderRequest.OrderItem item : request.getItems()) {
-                Optional<Product> prodOpt = productService.getProductById(item.getProductId());
+            for (OrderRequest.OrderItem itemReq : request.getItems()) {
+                Optional<Product> prodOpt = productRepository.findById(itemReq.getProductId());
                 if (prodOpt.isPresent()) {
                     Product prod = prodOpt.get();
-                    double itemTotal = prod.getPrice() * item.getQuantity();
+                    double itemTotal = prod.getPrice() * itemReq.getQuantity();
                     subtotal += itemTotal;
+
+                    OrderItem orderItem = new OrderItem(
+                        order,
+                        prod,
+                        itemReq.getQuantity(),
+                        prod.getPrice(),
+                        itemReq.getSelectedSize(),
+                        itemReq.getSelectedColor()
+                    );
+                    order.addItem(orderItem);
 
                     summaryList.add(new OrderResponse.ProductSummary(
                         prod.getId(),
                         prod.getName(),
                         prod.getPrice(),
-                        item.getQuantity(),
+                        itemReq.getQuantity(),
                         prod.getImage()
                     ));
                 }
@@ -59,24 +83,74 @@ public class OrderService {
         double shipping = subtotal > 300 ? 0.0 : 25.0;
         double total = Math.max(0, subtotal - discount + shipping);
 
+        order.setSubtotal(subtotal);
+        order.setDiscount(discount);
+        order.setShippingFee(shipping);
+        order.setTotalAmount(total);
+
+        // Save order and cascading order items to database
+        orderRepository.save(order);
+
+        // Map to standard response format expected by client
         OrderResponse response = new OrderResponse();
-        response.setOrderId(orderId);
-        response.setStatus("CONFIRMED");
-        response.setDate(date);
-        response.setCustomerName(request.getFullName());
-        response.setShippingAddress(request.getAddress() + ", " + request.getCity());
+        response.setOrderId(order.getOrderNumber());
+        response.setStatus(order.getStatus());
+        response.setDate(formattedDate);
+        response.setCustomerName(order.getCustomerName());
+        response.setShippingAddress(order.getAddress() + (order.getCity() != null ? ", " + order.getCity() : ""));
         response.setSubtotal(subtotal);
         response.setDiscount(discount);
         response.setShippingFee(shipping);
         response.setTotalAmount(total);
-        response.setPaymentMethod(request.getPaymentMethod() != null ? request.getPaymentMethod() : "Credit Card");
+        response.setPaymentMethod(order.getPaymentMethod());
         response.setItems(summaryList);
 
-        orderDatabase.put(orderId, response);
         return response;
     }
 
-    public Optional<OrderResponse> getOrderById(String orderId) {
-        return Optional.ofNullable(orderDatabase.get(orderId));
+    @Transactional(readOnly = true)
+    public Optional<OrderResponse> getOrderById(String id) {
+        // Search by orderNumber (e.g., "APNA-123456")
+        Optional<Order> orderOpt = orderRepository.findByOrderNumber(id);
+
+        // Fallback: search by database numeric primary key ID if applicable
+        if (orderOpt.isEmpty()) {
+            try {
+                Long orderId = Long.parseLong(id);
+                orderOpt = orderRepository.findById(orderId);
+            } catch (NumberFormatException ignored) {}
+        }
+
+        return orderOpt.map(this::mapToOrderResponse);
+    }
+
+    private OrderResponse mapToOrderResponse(Order order) {
+        OrderResponse response = new OrderResponse();
+        response.setOrderId(order.getOrderNumber());
+        response.setStatus(order.getStatus());
+        response.setDate(order.getCreatedAt().format(DateTimeFormatter.ofPattern("MMM dd, yyyy")));
+        response.setCustomerName(order.getCustomerName());
+        response.setShippingAddress(order.getAddress() + (order.getCity() != null ? ", " + order.getCity() : ""));
+        response.setSubtotal(order.getSubtotal());
+        response.setDiscount(order.getDiscount());
+        response.setShippingFee(order.getShippingFee());
+        response.setTotalAmount(order.getTotalAmount());
+        response.setPaymentMethod(order.getPaymentMethod());
+
+        List<OrderResponse.ProductSummary> summaryList = new ArrayList<>();
+        if (order.getItems() != null) {
+            for (OrderItem item : order.getItems()) {
+                Product prod = item.getProduct();
+                summaryList.add(new OrderResponse.ProductSummary(
+                    prod.getId(),
+                    prod.getName(),
+                    item.getUnitPrice(),
+                    item.getQuantity(),
+                    prod.getImage()
+                ));
+            }
+        }
+        response.setItems(summaryList);
+        return response;
     }
 }

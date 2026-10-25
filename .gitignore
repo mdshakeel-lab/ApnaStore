@@ -67,3 +67,9 @@ uploads/
 scratch/
 temp/
 tmp/
+
+# Embedded & Local Databases
+data/
+backend/data/
+*.mv.db
+*.trace.db
