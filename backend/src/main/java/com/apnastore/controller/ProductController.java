@@ -1,7 +1,9 @@
 package com.apnastore.controller;
 
-import com.apnastore.model.Category;
-import com.apnastore.model.Product;
+import com.apnastore.dto.CategoryResponse;
+import com.apnastore.dto.PageResponse;
+import com.apnastore.dto.ProductResponse;
+import com.apnastore.exception.ResourceNotFoundException;
 import com.apnastore.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,24 +19,39 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    // GET /api/products
+    // GET /api/products (supports optional page, size, sort, category, q)
     @GetMapping
-    public List<Product> getAllProducts(@RequestParam(value = "category", required = false) String category,
-                                         @RequestParam(value = "q", required = false) String query) {
-        return productService.filterProducts(category, query);
+    public ResponseEntity<?> getAllProducts(
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "q", required = false) String query,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size,
+            @RequestParam(value = "sort", required = false) String sort) {
+
+        if (page == null && size == null) {
+            // Default unpaged behavior: returns List<ProductResponse>
+            List<ProductResponse> products = productService.filterProducts(category, query, sort);
+            return ResponseEntity.ok(products);
+        }
+
+        // Paged behavior: returns PageResponse<ProductResponse>
+        int pageNumber = (page != null && page >= 0) ? page : 0;
+        int pageSize = (size != null && size > 0) ? size : 10;
+        PageResponse<ProductResponse> paged = productService.filterProductsPaged(category, query, pageNumber, pageSize, sort);
+        return ResponseEntity.ok(paged);
     }
 
     // GET /api/products/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable String id) {
-        return productService.getProductById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable String id) {
+        ProductResponse product = productService.getProductResponseById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
+        return ResponseEntity.ok(product);
     }
 
     // GET /api/products/categories
     @GetMapping("/categories")
-    public List<Category> getCategories() {
+    public List<CategoryResponse> getCategories() {
         return productService.getCategories();
     }
 }

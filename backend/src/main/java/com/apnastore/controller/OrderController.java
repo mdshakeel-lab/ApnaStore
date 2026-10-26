@@ -1,8 +1,10 @@
 package com.apnastore.controller;
 
-import com.apnastore.model.OrderRequest;
-import com.apnastore.model.OrderResponse;
+import com.apnastore.dto.OrderRequest;
+import com.apnastore.dto.OrderResponse;
+import com.apnastore.exception.ResourceNotFoundException;
 import com.apnastore.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +17,9 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    // POST /api/orders
+    // POST /api/orders with Bean Validation
     @PostMapping
-    public ResponseEntity<OrderResponse> placeOrder(@RequestBody OrderRequest orderRequest) {
+    public ResponseEntity<OrderResponse> placeOrder(@Valid @RequestBody OrderRequest orderRequest) {
         OrderResponse response = orderService.createOrder(orderRequest);
         return ResponseEntity.ok(response);
     }
@@ -27,6 +29,6 @@ public class OrderController {
     public ResponseEntity<OrderResponse> getOrder(@PathVariable String id) {
         return orderService.getOrderById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
     }
 }
