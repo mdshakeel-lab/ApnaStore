@@ -2,10 +2,15 @@ package com.apnastore.config;
 
 import com.apnastore.model.Category;
 import com.apnastore.model.Product;
+import com.apnastore.model.Role;
+import com.apnastore.model.User;
 import com.apnastore.repository.CategoryRepository;
 import com.apnastore.repository.ProductRepository;
+import com.apnastore.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +31,22 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    /** Password for the seed admin account; read from config / env var. */
+    @Value("${app.seed.admin-password:Admin@Store2026}")
+    private String adminPassword;
+
     @Override
     @Transactional
     public void run(String... args) {
         seedCategories();
         seedProducts();
+        seedAdminUser();
     }
 
     private void seedCategories() {
@@ -165,5 +181,22 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         productRepository.saveAll(catalog);
         System.out.println("[✓] Successfully seeded " + catalog.size() + " products into the database.");
+    }
+
+    /**
+     * Seeds a single ADMIN user — dev profile only.
+     * The password is read from app.seed.admin-password (application-dev.properties
+     * or the ADMIN_SEED_PASSWORD environment variable). Never committed in plain text.
+     */
+    private void seedAdminUser() {
+        if (userRepository.existsByEmail("admin@apnastore.com")) {
+            System.out.println("[*] Admin user already exists. Skipping admin seeding.");
+            return;
+        }
+
+        String hash = passwordEncoder.encode(adminPassword);
+        User admin = new User("Apna Admin", "admin@apnastore.com", hash, Role.ADMIN);
+        userRepository.save(admin);
+        System.out.println("[✓] Seeded ADMIN user: admin@apnastore.com");
     }
 }

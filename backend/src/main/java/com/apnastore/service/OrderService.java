@@ -8,6 +8,7 @@ import com.apnastore.exception.ResourceNotFoundException;
 import com.apnastore.model.Order;
 import com.apnastore.model.OrderItem;
 import com.apnastore.model.Product;
+import com.apnastore.model.User;
 import com.apnastore.repository.OrderRepository;
 import com.apnastore.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,9 @@ public class OrderService {
     /**
      * Creates an order with strict server-side price calculation,
      * promo code APNA20 validation, and transactional stock deduction.
+     * @param user The authenticated user (null for unauthenticated/guest orders).
      */
-    public OrderResponse createOrder(OrderRequest request) {
+    public OrderResponse createOrder(OrderRequest request, User user) {
         if (request.getItems() == null || request.getItems().isEmpty()) {
             throw new BadRequestException("Order must contain at least one item");
         }
@@ -149,6 +151,11 @@ public class OrderService {
         order.setShippingFee(shipping);
         order.setTotalAmount(total);
 
+        // Link order to the authenticated user (if present)
+        if (user != null) {
+            order.setUser(user);
+        }
+
         // Save order and cascading order items
         orderRepository.save(order);
 
@@ -183,6 +190,17 @@ public class OrderService {
         }
 
         return orderOpt.map(this::mapToOrderResponse);
+    }
+
+    /**
+     * Returns all orders placed by the given user, newest first.
+     */
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getMyOrders(User user) {
+        return orderRepository.findByUserOrderByCreatedAtDesc(user)
+                .stream()
+                .map(this::mapToOrderResponse)
+                .toList();
     }
 
     private OrderResponse mapToOrderResponse(Order order) {
