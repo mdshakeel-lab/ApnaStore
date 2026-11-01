@@ -51,6 +51,28 @@
           <i class="fas fa-moon" id="theme-toggle-icon"></i>
         </button>
 
+        <!-- Auth navigation: Login/Register button when logged out; User name & Logout when logged in -->
+        <div class="nav-auth-wrapper" id="nav-auth-wrapper">
+          <button class="nav-auth-btn" id="nav-login-btn" title="Login / Register" aria-label="Login or Register">
+            <i class="fas fa-user"></i>
+            <span class="nav-auth-label">Login / Register</span>
+          </button>
+          <div class="nav-user-bar" id="nav-user-bar" style="display: none;">
+            <button class="nav-user-btn" id="nav-user-btn" title="Account Details" aria-label="Account Details">
+              <i class="fas fa-user-circle"></i>
+              <span id="nav-user-name" class="nav-user-name">User</span>
+            </button>
+            <button class="nav-orders-btn" id="nav-my-orders-btn" title="My Orders" aria-label="My Orders">
+              <i class="fas fa-receipt"></i>
+              <span class="nav-orders-label">My Orders</span>
+            </button>
+            <button class="nav-logout-btn" id="nav-logout-btn" title="Logout" aria-label="Logout">
+              <i class="fas fa-sign-out-alt"></i>
+              <span class="nav-logout-label">Logout</span>
+            </button>
+          </div>
+        </div>
+
         <button class="icon-btn" id="open-wishlist-btn" title="Saved Items" aria-label="Wishlist">
           <i class="far fa-heart"></i>
           <span class="badge-count" id="wishlist-badge">0</span>
@@ -280,6 +302,99 @@
     </div>
   </div>
 
+  <!-- Auth Modal (Login / Register) -->
+  <div class="modal-backdrop" id="auth-modal-backdrop">
+    <div class="modal-card auth-modal-card" style="max-width: 440px;">
+      <button class="modal-close-btn close-btn" aria-label="Close Auth"><i class="fas fa-times"></i></button>
+
+      <!-- Tab switcher -->
+      <div class="auth-tabs-header">
+        <button id="auth-tab-login" class="auth-tab active" type="button">
+          Sign In
+        </button>
+        <button id="auth-tab-register" class="auth-tab" type="button">
+          Register
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="auth-login-form" novalidate>
+        <div class="form-group full" style="margin-bottom:1rem;">
+          <label class="form-label" for="auth-login-email">Email Address</label>
+          <input type="email" id="auth-login-email" class="form-input" placeholder="priya@royalcouture.com" required />
+          <div class="auth-field-error" id="auth-login-email-error"></div>
+        </div>
+        <div class="form-group full" style="margin-bottom:1.25rem;">
+          <label class="form-label" for="auth-login-password">Password</label>
+          <input type="password" id="auth-login-password" class="form-input" placeholder="Your password" required />
+          <div class="auth-field-error" id="auth-login-password-error"></div>
+        </div>
+        <div id="auth-login-error" class="auth-server-error" style="display:none;"></div>
+        <button type="submit" class="btn-primary" id="auth-login-btn" style="width:100%;">
+          Sign In <i class="fas fa-arrow-right"></i>
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="auth-register-form" style="display:none;" novalidate>
+        <div class="form-group full" style="margin-bottom:1rem;">
+          <label class="form-label" for="auth-reg-name">Full Name</label>
+          <input type="text" id="auth-reg-name" class="form-input" placeholder="Priya Sharma" required />
+          <div class="auth-field-error" id="auth-reg-name-error"></div>
+        </div>
+        <div class="form-group full" style="margin-bottom:1rem;">
+          <label class="form-label" for="auth-reg-email">Email Address</label>
+          <input type="email" id="auth-reg-email" class="form-input" placeholder="priya@royalcouture.com" required />
+          <div class="auth-field-error" id="auth-reg-email-error"></div>
+        </div>
+        <div class="form-group full" style="margin-bottom:1rem;">
+          <label class="form-label" for="auth-reg-password">Password <span style="color:var(--text-muted);font-size:0.8rem;">(min 6 chars)</span></label>
+          <input type="password" id="auth-reg-password" class="form-input" placeholder="Choose a password" required />
+          <div class="auth-field-error" id="auth-reg-password-error"></div>
+        </div>
+        <div class="form-group full" style="margin-bottom:1.25rem;">
+          <label class="form-label" for="auth-reg-confirm-password">Confirm Password</label>
+          <input type="password" id="auth-reg-confirm-password" class="form-input" placeholder="Re-enter password" required />
+          <div class="auth-field-error" id="auth-reg-confirm-password-error"></div>
+        </div>
+        <div id="auth-reg-error" class="auth-server-error" style="display:none;"></div>
+        <button type="submit" class="btn-primary" id="auth-reg-btn" style="width:100%;">
+          Create Account <i class="fas fa-crown"></i>
+        </button>
+      </form>
+
+      <!-- Logged-in panel -->
+      <div id="auth-loggedin-panel" style="display:none; text-align:center;">
+        <i class="fas fa-user-circle" style="font-size:3.5rem; color:var(--gold-primary); margin-bottom:1rem;"></i>
+        <h4 id="auth-loggedin-name" style="font-family:var(--font-serif); font-size:1.4rem; margin-bottom:0.25rem;"></h4>
+        <p id="auth-loggedin-email" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1.5rem;"></p>
+        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+          <button class="btn-primary" id="auth-profile-orders-btn" style="width:100%;">
+            <i class="fas fa-receipt"></i> View My Orders
+          </button>
+          <button class="btn-outline" id="auth-logout-btn" style="width:100%;">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Orders Modal -->
+  <div class="modal-backdrop" id="orders-modal-backdrop">
+    <div class="modal-card orders-modal-card">
+      <div class="orders-modal-header">
+        <h3 class="orders-modal-title">
+          <i class="fas fa-crown" style="color: var(--gold-primary);"></i> My Royal Orders
+        </h3>
+        <button class="modal-close-btn close-btn" aria-label="Close Orders"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="orders-content" class="orders-modal-content">
+        <!-- Dynamically rendered orders list or empty state -->
+      </div>
+    </div>
+  </div>
+
   <!-- Slide-out Wishlist Drawer -->
   <div class="drawer-backdrop" id="wishlist-drawer-backdrop">
     <div class="drawer-panel">
@@ -434,11 +549,9 @@
         </div>
       </div>
 
-      <div style="display: flex; gap: 1rem;">
-        <button class="btn-outline" id="print-receipt-btn" style="flex: 1;"><i class="fas fa-print"></i> Print
-          Invoice</button>
-        <button class="btn-primary" onclick="(window.apnaStoreApp || window.lumiereApp).closeAllModals();"
-          style="flex: 1;">Return to Boutique</button>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <button class="btn-outline" id="print-receipt-btn" style="flex: 1;"><i class="fas fa-print"></i> Print Invoice</button>
+        <button class="btn-primary" id="receipt-view-orders-btn" style="flex: 1;"><i class="fas fa-receipt"></i> View in My Orders</button>
       </div>
     </div>
   </div>

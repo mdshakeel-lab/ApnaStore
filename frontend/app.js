@@ -17,7 +17,7 @@ class ApnaStoreApp {
     ];
     this.wishlist = JSON.parse(localStorage.getItem('apna_store_wishlist') || localStorage.getItem('lumiere_wishlist')) || ['prod-02', 'prod-09'];
     
-    this.activeModal = null; // 'quickview', 'cart', 'wishlist', 'checkout', 'receipt'
+    this.activeModal = null; // 'quickview', 'cart', 'wishlist', 'checkout', 'receipt', 'auth'
     this.quickViewProduct = null;
     this.selectedModalSize = null;
     this.selectedModalColor = null;
@@ -25,6 +25,11 @@ class ApnaStoreApp {
     this.checkoutStep = 1;
     this.appliedPromo = null;
     this.lastCompletedOrder = null;
+
+    // Auth state — token and user info persist in localStorage
+    this.authToken = localStorage.getItem('apna_auth_token') || null;
+    this.authUser  = JSON.parse(localStorage.getItem('apna_auth_user') || 'null');
+    this.pendingCheckout = false;
 
     this.init();
   }
@@ -35,6 +40,7 @@ class ApnaStoreApp {
     this.renderCategoryPills();
     this.renderTestimonials();
     this.setupEventListeners();
+    this.initAuth();
     await this.fetchProductsFromBackend();
     this.filterAndRenderProducts();
     this.updateBadges();
@@ -69,8 +75,9 @@ class ApnaStoreApp {
       const res = await fetch('http://localhost:8080/api/products');
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-          this.products = data;
+        const items = Array.isArray(data) ? data : (data && Array.isArray(data.content) ? data.content : []);
+        if (items.length > 0) {
+          this.products = items;
           console.log('✓ Connected to Java Spring Boot REST API! Loaded products from backend.');
         }
       }
@@ -135,6 +142,25 @@ class ApnaStoreApp {
 
     const wishlistBtn = document.getElementById('open-wishlist-btn');
     if (wishlistBtn) wishlistBtn.addEventListener('click', () => this.openDrawer('wishlist'));
+
+    // Auth & Account navigation buttons
+    const navLoginBtn = document.getElementById('nav-login-btn');
+    if (navLoginBtn) navLoginBtn.addEventListener('click', () => this.openAuthModal());
+
+    const navUserBtn = document.getElementById('nav-user-btn');
+    if (navUserBtn) navUserBtn.addEventListener('click', () => this.openAuthModal());
+
+    const navOrdersBtn = document.getElementById('nav-my-orders-btn');
+    if (navOrdersBtn) navOrdersBtn.addEventListener('click', () => this.openOrdersModal());
+
+    const navLogoutBtn = document.getElementById('nav-logout-btn');
+    if (navLogoutBtn) navLogoutBtn.addEventListener('click', () => this.handleLogout());
+
+    const authNavBtn = document.getElementById('auth-nav-btn');
+    if (authNavBtn) authNavBtn.addEventListener('click', () => this.openAuthModal());
+
+    const receiptOrdersBtn = document.getElementById('receipt-view-orders-btn');
+    if (receiptOrdersBtn) receiptOrdersBtn.addEventListener('click', () => this.openOrdersModal());
   }
 
   // Render Category Filter Pills
@@ -632,11 +658,30 @@ class ApnaStoreApp {
 
   // Checkout Multi-Step Modal
   openCheckoutModal() {
+    // Requirement 4: If not logged in, prompt to log in and open auth modal
+    if (!this.authToken || !this.authUser) {
+      this.pendingCheckout = true;
+      this.showToast('Please sign in or register to complete your order.', 'fa-lock');
+      this.openAuthModal();
+      return;
+    }
+
     this.closeAllModals();
+    this.activeModal = 'checkout';
     this.checkoutStep = 1;
 
     const modal = document.getElementById('checkout-modal-backdrop');
     if (!modal) return;
+
+    // Prefill user details from authenticated session
+    const nameInput = document.getElementById('checkout-name');
+    const emailInput = document.getElementById('checkout-email');
+    if (nameInput && (!nameInput.value || nameInput.value === 'Valued Client') && this.authUser?.name) {
+      nameInput.value = this.authUser.name;
+    }
+    if (emailInput && (!emailInput.value || emailInput.value === 'client@apnastore.com') && this.authUser?.email) {
+      emailInput.value = this.authUser.email;
+    }
 
     this.renderCheckoutStep();
     modal.classList.add('open');
@@ -699,9 +744,12 @@ class ApnaStoreApp {
         };
 
         try {
+          const headers = { 'Content-Type': 'application/json' };
+          if (this.authToken) headers['Authorization'] = `Bearer ${this.authToken}`;
+
           const res = await fetch('http://localhost:8080/api/orders', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             body: JSON.stringify(orderPayload)
           });
 
@@ -717,11 +765,32 @@ class ApnaStoreApp {
               shippingName: apiOrder.customerName
             };
             this.showToast('Order confirmed by Java Spring Boot backend!', 'fa-check-circle');
+          } else if (res.status === 401) {
+            // Token expired or invalid — log user out and prompt to sign in again
+            this.handleLogout();
+            this.pendingCheckout = true;
+            this.showToast('Your session has expired. Please sign in again.', 'fa-exclamation-triangle');
+            this.openAuthModal();
+            return;
           } else {
-            throw new Error('Backend returned non-200 status');
+            const errData = await res.json().catch(() => null);
+            let errMsg = 'Order placement failed.';
+            if (errData) {
+              if (errData.fieldErrors && Object.keys(errData.fieldErrors).length > 0) {
+                const firstKey = Object.keys(errData.fieldErrors)[0];
+                errMsg = errData.fieldErrors[firstKey];
+              } else if (errData.message) {
+                errMsg = errData.message;
+              }
+            } else if (res.status === 409) {
+              errMsg = 'Item is out of stock!';
+            }
+            this.showToast(errMsg, 'fa-exclamation-triangle');
+            return;
           }
         } catch (err) {
-          // Fallback simulation if backend offline
+          // Fallback simulation only if backend offline (network failure)
+          console.warn('Backend unavailable, using client fallback:', err);
           this.lastCompletedOrder = {
             id: `APNA-${Math.floor(100000 + Math.random() * 900000)}`,
             date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
@@ -796,6 +865,540 @@ class ApnaStoreApp {
         </div>
       </div>
     `).join('');
+  }
+
+  // ============================================================
+  // Auth & Account Management — Login, Register, Logout, My Orders
+  // ============================================================
+
+  /** Called once in init() — restores persisted session and wires up auth elements. */
+  initAuth() {
+    this.updateAuthNavButton();
+
+    // Form submissions
+    const loginForm    = document.getElementById('auth-login-form');
+    const registerForm = document.getElementById('auth-register-form');
+    const logoutBtn    = document.getElementById('auth-logout-btn');
+    const tabLogin     = document.getElementById('auth-tab-login');
+    const tabRegister  = document.getElementById('auth-tab-register');
+    const profileOrdersBtn = document.getElementById('auth-profile-orders-btn');
+
+    if (loginForm) {
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await this.handleLogin();
+      });
+    }
+
+    if (registerForm) {
+      registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await this.handleRegister();
+      });
+    }
+
+    if (tabLogin) {
+      tabLogin.addEventListener('click', () => this.switchAuthTab('login'));
+    }
+
+    if (tabRegister) {
+      tabRegister.addEventListener('click', () => this.switchAuthTab('register'));
+    }
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => this.handleLogout());
+    }
+
+    if (profileOrdersBtn) {
+      profileOrdersBtn.addEventListener('click', () => this.openOrdersModal());
+    }
+
+    // Clear field-level and server errors on input
+    const inputsToClear = [
+      'auth-login-email', 'auth-login-password',
+      'auth-reg-name', 'auth-reg-email', 'auth-reg-password', 'auth-reg-confirm-password'
+    ];
+    inputsToClear.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', () => {
+          const fieldError = document.getElementById(`${id}-error`);
+          if (fieldError) {
+            fieldError.innerText = '';
+            fieldError.classList.remove('show');
+          }
+          const serverError = id.startsWith('auth-login')
+            ? document.getElementById('auth-login-error')
+            : document.getElementById('auth-reg-error');
+          if (serverError) serverError.style.display = 'none';
+        });
+      }
+    });
+  }
+
+  /** Helper: validate email address format */
+  isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  /** Helper: show error below an input field */
+  setFieldError(fieldId, message) {
+    const errorEl = document.getElementById(`${fieldId}-error`);
+    if (errorEl) {
+      errorEl.innerText = message;
+      errorEl.classList.add('show');
+    }
+  }
+
+  /** Helper: clear all field error messages */
+  clearAllFieldErrors() {
+    document.querySelectorAll('.auth-field-error').forEach(el => {
+      el.innerText = '';
+      el.classList.remove('show');
+    });
+    const loginServerError = document.getElementById('auth-login-error');
+    if (loginServerError) loginServerError.style.display = 'none';
+    const regServerError = document.getElementById('auth-reg-error');
+    if (regServerError) regServerError.style.display = 'none';
+  }
+
+  /** Open the auth modal and show the correct panel based on login state. */
+  openAuthModal() {
+    this.closeAllModals();
+    this.activeModal = 'auth';
+    const modal = document.getElementById('auth-modal-backdrop');
+    if (!modal) return;
+
+    this.clearAllFieldErrors();
+    this._renderAuthModalState();
+    modal.classList.add('open');
+  }
+
+  /** Switch between the login and register tab forms. */
+  switchAuthTab(tab) {
+    this.clearAllFieldErrors();
+    const loginForm    = document.getElementById('auth-login-form');
+    const registerForm = document.getElementById('auth-register-form');
+    const tabLogin     = document.getElementById('auth-tab-login');
+    const tabRegister  = document.getElementById('auth-tab-register');
+
+    if (tab === 'login') {
+      if (loginForm)    loginForm.style.display    = 'block';
+      if (registerForm) registerForm.style.display = 'none';
+      if (tabLogin)     tabLogin.classList.add('active');
+      if (tabRegister)  tabRegister.classList.remove('active');
+    } else {
+      if (loginForm)    loginForm.style.display    = 'none';
+      if (registerForm) registerForm.style.display = 'block';
+      if (tabLogin)     tabLogin.classList.remove('active');
+      if (tabRegister)  tabRegister.classList.add('active');
+    }
+  }
+
+  /** Render the modal content based on login state. */
+  _renderAuthModalState() {
+    const loginForm      = document.getElementById('auth-login-form');
+    const registerForm   = document.getElementById('auth-register-form');
+    const loggedinPanel  = document.getElementById('auth-loggedin-panel');
+    const tabBar         = document.querySelector('#auth-modal-backdrop .auth-tabs-header');
+
+    if (this.authUser) {
+      // Logged in — show user profile panel
+      if (loginForm)     loginForm.style.display     = 'none';
+      if (registerForm)  registerForm.style.display  = 'none';
+      if (tabBar)        tabBar.style.display        = 'none';
+      if (loggedinPanel) {
+        loggedinPanel.style.display = 'block';
+        const nameEl  = document.getElementById('auth-loggedin-name');
+        const emailEl = document.getElementById('auth-loggedin-email');
+        if (nameEl)  nameEl.innerText  = this.authUser.name;
+        if (emailEl) emailEl.innerText = this.authUser.email;
+      }
+    } else {
+      // Logged out — show login form by default
+      if (loginForm)     loginForm.style.display     = 'block';
+      if (registerForm)  registerForm.style.display  = 'none';
+      if (tabBar)        tabBar.style.display        = 'flex';
+      if (loggedinPanel) loggedinPanel.style.display = 'none';
+
+      const tabLogin    = document.getElementById('auth-tab-login');
+      const tabRegister = document.getElementById('auth-tab-register');
+      if (tabLogin)    tabLogin.classList.add('active');
+      if (tabRegister) tabRegister.classList.remove('active');
+    }
+  }
+
+  /** Handle the login form submission with validation & server error handling. */
+  async handleLogin() {
+    this.clearAllFieldErrors();
+
+    const emailInput    = document.getElementById('auth-login-email');
+    const passwordInput = document.getElementById('auth-login-password');
+    const email         = emailInput ? emailInput.value.trim() : '';
+    const password      = passwordInput ? passwordInput.value : '';
+    const errorEl       = document.getElementById('auth-login-error');
+    const btn           = document.getElementById('auth-login-btn');
+
+    // Client-side validation
+    let hasError = false;
+    if (!email) {
+      this.setFieldError('auth-login-email', 'Email address is required.');
+      hasError = true;
+    } else if (!this.isValidEmail(email)) {
+      this.setFieldError('auth-login-email', 'Please enter a valid email address.');
+      hasError = true;
+    }
+
+    if (!password) {
+      this.setFieldError('auth-login-password', 'Password is required.');
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+    }
+
+    try {
+      const res = await fetch('http://localhost:8080/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        this._saveAuthSession(data);
+        if (!this.pendingCheckout) {
+          this.closeAllModals();
+          this.showToast(`Welcome back, ${data.name}!`, 'fa-user-circle');
+        }
+      } else {
+        const msg = data.message || 'Login failed. Please check your credentials.';
+        if (errorEl) {
+          errorEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${msg}`;
+          errorEl.style.display = 'flex';
+        }
+      }
+    } catch (err) {
+      if (errorEl) {
+        errorEl.innerHTML = '<i class="fas fa-wifi"></i> Cannot reach server. Please ensure the backend is running.';
+        errorEl.style.display = 'flex';
+      }
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = 'Sign In <i class="fas fa-arrow-right"></i>';
+      }
+    }
+  }
+
+  /** Handle the register form submission with validation & server error handling. */
+  async handleRegister() {
+    this.clearAllFieldErrors();
+
+    const nameInput        = document.getElementById('auth-reg-name');
+    const emailInput       = document.getElementById('auth-reg-email');
+    const passwordInput    = document.getElementById('auth-reg-password');
+    const confirmPassInput = document.getElementById('auth-reg-confirm-password');
+
+    const name            = nameInput ? nameInput.value.trim() : '';
+    const email           = emailInput ? emailInput.value.trim() : '';
+    const password        = passwordInput ? passwordInput.value : '';
+    const confirmPassword = confirmPassInput ? confirmPassInput.value : '';
+
+    const errorEl         = document.getElementById('auth-reg-error');
+    const btn             = document.getElementById('auth-reg-btn');
+
+    // Client-side validation
+    let hasError = false;
+    if (!name) {
+      this.setFieldError('auth-reg-name', 'Full name is required.');
+      hasError = true;
+    } else if (name.length < 2) {
+      this.setFieldError('auth-reg-name', 'Name must be at least 2 characters.');
+      hasError = true;
+    }
+
+    if (!email) {
+      this.setFieldError('auth-reg-email', 'Email address is required.');
+      hasError = true;
+    } else if (!this.isValidEmail(email)) {
+      this.setFieldError('auth-reg-email', 'Please enter a valid email address.');
+      hasError = true;
+    }
+
+    if (!password) {
+      this.setFieldError('auth-reg-password', 'Password is required.');
+      hasError = true;
+    } else if (password.length < 6) {
+      this.setFieldError('auth-reg-password', 'Password must be at least 6 characters.');
+      hasError = true;
+    }
+
+    if (!confirmPassword) {
+      this.setFieldError('auth-reg-confirm-password', 'Please confirm your password.');
+      hasError = true;
+    } else if (password !== confirmPassword) {
+      this.setFieldError('auth-reg-confirm-password', 'Passwords do not match.');
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+    }
+
+    try {
+      const res = await fetch('http://localhost:8080/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        this._saveAuthSession(data);
+        if (!this.pendingCheckout) {
+          this.closeAllModals();
+          this.showToast(`Account created! Welcome to Apna Store, ${data.name}!`, 'fa-crown');
+        }
+      } else {
+        // Show field errors if present
+        let topMsg = data.message || 'Registration failed.';
+        if (data.fieldErrors && Object.keys(data.fieldErrors).length > 0) {
+          Object.entries(data.fieldErrors).forEach(([field, msg]) => {
+            if (field === 'name') this.setFieldError('auth-reg-name', msg);
+            else if (field === 'email') this.setFieldError('auth-reg-email', msg);
+            else if (field === 'password') this.setFieldError('auth-reg-password', msg);
+          });
+          topMsg = Object.values(data.fieldErrors)[0];
+        }
+        if (errorEl) {
+          errorEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${topMsg}`;
+          errorEl.style.display = 'flex';
+        }
+      }
+    } catch (err) {
+      if (errorEl) {
+        errorEl.innerHTML = '<i class="fas fa-wifi"></i> Cannot reach server. Please ensure the backend is running.';
+        errorEl.style.display = 'flex';
+      }
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = 'Create Account <i class="fas fa-crown"></i>';
+      }
+    }
+  }
+
+  /** Clear the auth session and refresh the navbar. */
+  handleLogout() {
+    localStorage.removeItem('apna_auth_token');
+    localStorage.removeItem('apna_auth_user');
+    this.authToken = null;
+    this.authUser  = null;
+    this.pendingCheckout = false;
+    this.updateAuthNavButton();
+    this.closeAllModals();
+    this.showToast('You have been logged out.', 'fa-sign-out-alt');
+  }
+
+  /** Persist auth session to localStorage and update UI. */
+  _saveAuthSession(data) {
+    this.authToken = data.token;
+    this.authUser  = { id: data.id, name: data.name, email: data.email, role: data.role };
+    localStorage.setItem('apna_auth_token', data.token);
+    localStorage.setItem('apna_auth_user',  JSON.stringify(this.authUser));
+    this.updateAuthNavButton();
+
+    // If a checkout was waiting for user login/registration, continue seamlessly!
+    if (this.pendingCheckout) {
+      this.pendingCheckout = false;
+      this.closeAllModals();
+      this.showToast(`Welcome ${data.name}! Continuing to checkout...`, 'fa-check');
+      setTimeout(() => this.openCheckoutModal(), 350);
+    }
+  }
+
+  /** Update the auth button/bar in the navbar to reflect login state. */
+  updateAuthNavButton() {
+    const navLoginBtn = document.getElementById('nav-login-btn');
+    const navUserBar  = document.getElementById('nav-user-bar');
+    const navUserName = document.getElementById('nav-user-name');
+
+    if (this.authUser) {
+      const firstName = this.authUser.name.split(' ')[0];
+      if (navLoginBtn) navLoginBtn.style.display = 'none';
+      if (navUserBar)  navUserBar.style.display  = 'flex';
+      if (navUserName) navUserName.innerText     = firstName;
+    } else {
+      if (navLoginBtn) navLoginBtn.style.display = 'inline-flex';
+      if (navUserBar)  navUserBar.style.display  = 'none';
+    }
+
+    // Backwards compatibility with single icon button if present
+    const icon  = document.getElementById('auth-nav-icon');
+    const label = document.getElementById('auth-nav-label');
+    if (icon && label) {
+      if (this.authUser) {
+        icon.className      = 'fas fa-user-circle';
+        label.innerText     = this.authUser.name.split(' ')[0];
+        label.style.display = 'inline';
+      } else {
+        icon.className      = 'fas fa-user';
+        label.innerText     = '';
+        label.style.display = 'none';
+      }
+    }
+  }
+
+  /** Open the "My Orders" modal and fetch orders from the backend. */
+  async openOrdersModal() {
+    if (!this.authToken || !this.authUser) {
+      this.showToast('Please sign in to view your orders.', 'fa-lock');
+      this.openAuthModal();
+      return;
+    }
+
+    this.closeAllModals();
+    this.activeModal = 'orders';
+    const modal = document.getElementById('orders-modal-backdrop');
+    if (!modal) return;
+
+    modal.classList.add('open');
+    await this.loadMyOrders();
+  }
+
+  /** Fetch the logged-in user's orders from GET /api/orders/my */
+  async loadMyOrders() {
+    const container = document.getElementById('orders-content');
+    if (!container) return;
+
+    container.innerHTML = `
+      <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--gold-primary); margin-bottom: 1rem;"></i>
+        <p style="font-family: var(--font-serif); font-size: 1.1rem;">Retrieving your royal couture orders...</p>
+      </div>
+    `;
+
+    try {
+      const res = await fetch('http://localhost:8080/api/orders/my', {
+        headers: {
+          'Authorization': `Bearer ${this.authToken}`
+        }
+      });
+
+      if (res.status === 401) {
+        this.handleLogout();
+        this.showToast('Your session has expired. Please sign in again.', 'fa-exclamation-triangle');
+        this.openAuthModal();
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error(`Failed to load orders (HTTP ${res.status})`);
+      }
+
+      const orders = await res.json();
+      this.renderMyOrders(orders);
+    } catch (err) {
+      container.innerHTML = `
+        <div class="orders-empty-state">
+          <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+          <h4 style="font-family: var(--font-serif); font-size: 1.25rem; margin-bottom: 0.5rem;">Could not load orders</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+            ${err.message || 'There was an issue fetching your order history.'}
+          </p>
+          <button class="btn-primary" onclick="window.apnaStoreApp.loadMyOrders()">
+            Try Again <i class="fas fa-redo"></i>
+          </button>
+        </div>
+      `;
+    }
+  }
+
+  /** Render the fetched orders list or an elegant empty state. */
+  renderMyOrders(orders) {
+    const container = document.getElementById('orders-content');
+    if (!container) return;
+
+    if (!Array.isArray(orders) || orders.length === 0) {
+      container.innerHTML = `
+        <div class="orders-empty-state">
+          <i class="fas fa-box-open orders-empty-icon"></i>
+          <h4 style="font-family: var(--font-serif); font-size: 1.35rem; margin-bottom: 0.5rem; color: var(--text-primary);">
+            No Orders Yet
+          </h4>
+          <p style="color: var(--text-muted); font-size: 0.92rem; max-width: 400px; margin: 0 auto 1.75rem auto;">
+            You have not placed any couture orders yet. Discover our handcrafted bridal lehengas, sherwanis, and Kundan jewelry.
+          </p>
+          <button class="btn-primary" onclick="window.apnaStoreApp.closeAllModals()">
+            Explore Collection <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = orders.map(order => {
+      const itemsHtml = (order.items || []).map(item => `
+        <div class="order-item-row">
+          <img src="${item.image || './assets/royal_lehenga.png'}" alt="${item.name}" class="order-item-img" />
+          <div class="order-item-info">
+            <div class="order-item-name">${item.name}</div>
+            <div class="order-item-meta">Qty: ${item.quantity} × ₹${(item.unitPrice || 0).toLocaleString()}</div>
+          </div>
+          <div class="order-item-total">₹${((item.unitPrice || 0) * item.quantity).toLocaleString()}</div>
+        </div>
+      `).join('');
+
+      return `
+        <div class="order-card-item">
+          <div class="order-card-header">
+            <div>
+              <span class="order-number">${order.orderId}</span>
+              <span class="order-date">${order.date || 'Recent'}</span>
+            </div>
+            <span class="order-status-badge">
+              <i class="fas fa-check-circle"></i> ${order.status || 'CONFIRMED'}
+            </span>
+          </div>
+
+          <div class="order-card-body">
+            <div class="order-items-list">
+              ${itemsHtml}
+            </div>
+
+            <div class="order-summary-box">
+              <div class="order-summary-row">
+                <span>Shipping Address:</span>
+                <span style="color: var(--text-primary); font-weight: 500;">${order.shippingAddress || 'Standard Address'}</span>
+              </div>
+              <div class="order-summary-row">
+                <span>Payment Method:</span>
+                <span style="color: var(--text-primary); font-weight: 500;">${order.paymentMethod || 'Credit Card'}</span>
+              </div>
+              ${order.discount && order.discount > 0 ? `
+              <div class="order-summary-row discount">
+                <span>Promo Discount:</span>
+                <span>-₹${order.discount.toLocaleString()}</span>
+              </div>` : ''}
+              <div class="order-summary-row total">
+                <span>Total Amount:</span>
+                <span>₹${(order.totalAmount || 0).toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 }
 
