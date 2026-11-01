@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -26,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class ApnaStoreBackendApplicationTests {
 
     @Autowired
@@ -86,6 +89,7 @@ public class ApnaStoreBackendApplicationTests {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Req 2 & 3: Validation failure returns HTTP 400 with consistent ErrorResponse and fieldErrors")
     void testOrderValidationFailure() throws Exception {
         // Missing name, missing address, invalid email, invalid phone, empty items
@@ -111,6 +115,7 @@ public class ApnaStoreBackendApplicationTests {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Req 2 & 3: Item quantity <= 0 fails Bean Validation with HTTP 400")
     void testOrderZeroQuantityValidation() throws Exception {
         OrderRequest req = new OrderRequest();
@@ -141,6 +146,7 @@ public class ApnaStoreBackendApplicationTests {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Req 3 & 5: Insufficient stock returns HTTP 409 Conflict with clear error message")
     void testInsufficientStockReturns409() throws Exception {
         Product prod = productRepository.findById("prod-ind-01").orElseThrow();
@@ -165,6 +171,7 @@ public class ApnaStoreBackendApplicationTests {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("Req 4 & 5: Server calculates price from DB, validates APNA20 20% promo, reduces stock")
     void testSuccessfulOrderWithPromoAndStockDeduction() throws Exception {
         Product prod = productRepository.findById("prod-ind-02").orElseThrow();
