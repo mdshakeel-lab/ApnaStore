@@ -98,6 +98,13 @@ public class SecurityConfig {
                 // H2 web console (dev only)
                 .requestMatchers("/h2-console/**").permitAll()
 
+                // Swagger UI & OpenAPI Specification (dev / interactive testing)
+                .requestMatchers(
+                    "/swagger-ui.html",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**"
+                ).permitAll()
+
                 // Frontend static files (index.html, app.js, styles.css, /assets/*)
                 .requestMatchers(
                     "/", "/index.html", "/app.js", "/data.js",
