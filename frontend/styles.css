@@ -3,28 +3,36 @@
    ========================================================================== */
 
 :root {
-  /* Default Light White Royal Palette */
-  --bg-main: #f8fafc;
-  --bg-surface: #ffffff;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f1f5f9;
-  --bg-glass: rgba(255, 255, 255, 0.88);
+  /* Default Light Cream & Burnt Orange Palette */
+  --bg-main: #F5EFE6;
+  --bg-surface: #FBF7F0;
+  --bg-card: #FFFDF8;
+  --bg-card-hover: #EFE7DA;
+  --bg-glass: rgba(251, 247, 240, 0.90);
   
-  --gold-primary: #b48528;
-  --gold-hover: #9a6f1d;
-  --gold-light: #523a07;
-  --gold-glow: rgba(180, 133, 40, 0.2);
+  --gold-primary: #CC5500;
+  --gold-hover: #A84400;
+  --gold-light: #F3D9C4;
+  --gold-glow: rgba(204, 85, 0, 0.18);
 
-  --text-primary: #0f172a;
-  --text-muted: #64748b;
-  --text-dark: #ffffff;
+  --accent-primary: #CC5500;
+  --accent-hover: #A84400;
+  --accent-light: #F3D9C4;
+  --accent-glow: rgba(204, 85, 0, 0.18);
+  --accent-tint: rgba(204, 85, 0, 0.08);
 
-  --border-subtle: rgba(15, 23, 42, 0.08);
-  --border-gold: rgba(180, 133, 40, 0.28);
+  --text-primary: #14110F;
+  --text-muted: #6B5F55;
+  --text-dark: #F5EFE6;
 
-  --shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.05);
-  --shadow-lg: 0 16px 36px rgba(15, 23, 42, 0.09);
-  --shadow-gold: 0 0 25px rgba(180, 133, 40, 0.15);
+  --border-subtle: rgba(20, 17, 15, 0.10);
+  --border-gold: rgba(204, 85, 0, 0.30);
+  --border-accent: rgba(204, 85, 0, 0.30);
+
+  --shadow-sm: 0 4px 14px rgba(20, 17, 15, 0.05);
+  --shadow-lg: 0 16px 36px rgba(20, 17, 15, 0.10);
+  --shadow-gold: 0 0 25px rgba(204, 85, 0, 0.18);
+  --shadow-accent: 0 0 25px rgba(204, 85, 0, 0.18);
 
   --radius-sm: 6px;
   --radius-md: 12px;
@@ -37,75 +45,83 @@
   --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Light Theme Specific Components */
-  --scrollbar-track: #f1f5f9;
-  --scrollbar-thumb: #cbd5e1;
-  --announcement-bg: linear-gradient(90deg, #fbf7ee 0%, #fffdf9 50%, #fbf7ee 100%);
-  --announcement-color: #7a5813;
-  --logo-gradient: linear-gradient(135deg, #0f172a 0%, #b48528 100%);
-  --hero-bg: radial-gradient(circle at 70% 30%, rgba(212, 175, 55, 0.12) 0%, rgba(248, 246, 240, 0.6) 40%, transparent 75%);
-  --hero-title-gradient: linear-gradient(135deg, #b48528 0%, #876214 100%);
-  --hero-badge-bg: rgba(255, 255, 255, 0.94);
-  --input-bg: #ffffff;
-  --chip-bg: #ffffff;
-  --product-img-bg: #f8fafc;
-  --card-wishlist-bg: rgba(255, 255, 255, 0.9);
-  --quickview-overlay-bg: linear-gradient(to top, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.75) 60%, transparent);
-  --quickview-btn-bg: #ffffff;
-  --backdrop-bg: rgba(15, 23, 42, 0.5);
-  --drawer-shadow: -10px 0 40px rgba(15, 23, 42, 0.12);
-  --close-btn-bg: rgba(15, 23, 42, 0.05);
-  --close-btn-hover: rgba(15, 23, 42, 0.1);
-  --track-bg: rgba(15, 23, 42, 0.08);
-  --cart-item-bg: #f8fafc;
-  --footer-bg: #f8fafc;
-  --testimonials-bg: radial-gradient(circle at center, rgba(180, 133, 40, 0.08) 0%, #ffffff 70%);
+  --scrollbar-track: #EFE7DA;
+  --scrollbar-thumb: #D8CEBE;
+  --announcement-bg: linear-gradient(90deg, #F3D9C4 0%, #FBF7F0 50%, #F3D9C4 100%);
+  --announcement-color: #A84400;
+  --logo-gradient: linear-gradient(135deg, #14110F 0%, #CC5500 100%);
+  --hero-bg: radial-gradient(circle at 70% 30%, rgba(204, 85, 0, 0.12) 0%, rgba(245, 239, 230, 0.7) 45%, transparent 75%);
+  --hero-title-gradient: linear-gradient(135deg, #14110F 0%, #CC5500 100%);
+  --hero-badge-bg: rgba(251, 247, 240, 0.94);
+  --input-bg: #FFFDF8;
+  --chip-bg: #FFFDF8;
+  --product-img-bg: #EFE7DA;
+  --card-wishlist-bg: rgba(251, 247, 240, 0.92);
+  --quickview-overlay-bg: linear-gradient(to top, rgba(251, 247, 240, 0.96), rgba(251, 247, 240, 0.75) 60%, transparent);
+  --quickview-btn-bg: #FFFDF8;
+  --backdrop-bg: rgba(20, 17, 15, 0.6);
+  --drawer-shadow: -10px 0 40px rgba(20, 17, 15, 0.15);
+  --close-btn-bg: rgba(20, 17, 15, 0.06);
+  --close-btn-hover: rgba(20, 17, 15, 0.12);
+  --track-bg: rgba(20, 17, 15, 0.08);
+  --cart-item-bg: #FBF7F0;
+  --footer-bg: #EFE7DA;
+  --testimonials-bg: radial-gradient(circle at center, rgba(204, 85, 0, 0.08) 0%, #F5EFE6 70%);
 }
 
 [data-theme="dark"] {
-  --bg-main: #0b0d13;
-  --bg-surface: #121620;
-  --bg-card: #181d2a;
-  --bg-card-hover: #202738;
-  --bg-glass: rgba(24, 29, 42, 0.75);
+  --bg-main: #14110F;
+  --bg-surface: #1C1815;
+  --bg-card: #231E1A;
+  --bg-card-hover: #2C2621;
+  --bg-glass: rgba(28, 24, 21, 0.85);
   
-  --gold-primary: #d4af37;
-  --gold-hover: #e5be48;
-  --gold-light: #f4e4b5;
-  --gold-glow: rgba(212, 175, 55, 0.25);
+  --gold-primary: #E2701F;
+  --gold-hover: #F08030;
+  --gold-light: #F6C9A5;
+  --gold-glow: rgba(226, 112, 31, 0.25);
 
-  --text-primary: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-dark: #0f172a;
+  --accent-primary: #E2701F;
+  --accent-hover: #F08030;
+  --accent-light: #F6C9A5;
+  --accent-glow: rgba(226, 112, 31, 0.25);
+  --accent-tint: rgba(226, 112, 31, 0.12);
 
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-gold: rgba(212, 175, 55, 0.3);
+  --text-primary: #F5EFE6;
+  --text-muted: #A89B8E;
+  --text-dark: #14110F;
 
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
-  --shadow-gold: 0 0 25px rgba(212, 175, 55, 0.2);
+  --border-subtle: rgba(245, 239, 230, 0.10);
+  --border-gold: rgba(226, 112, 31, 0.35);
+  --border-accent: rgba(226, 112, 31, 0.35);
 
-  --scrollbar-track: #0b0d13;
-  --scrollbar-thumb: #2a3142;
-  --announcement-bg: linear-gradient(90deg, #111520 0%, #1f2738 50%, #111520 100%);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --shadow-gold: 0 0 25px rgba(226, 112, 31, 0.25);
+  --shadow-accent: 0 0 25px rgba(226, 112, 31, 0.25);
+
+  --scrollbar-track: #14110F;
+  --scrollbar-thumb: #2C2621;
+  --announcement-bg: linear-gradient(90deg, #1C1815 0%, #2C2621 50%, #1C1815 100%);
   --announcement-color: var(--gold-light);
-  --logo-gradient: linear-gradient(135deg, #ffffff 0%, #d4af37 100%);
-  --hero-bg: radial-gradient(circle at 70% 30%, rgba(212, 175, 55, 0.08) 0%, transparent 60%);
-  --hero-title-gradient: linear-gradient(135deg, #ffffff 0%, #d4af37 100%);
-  --hero-badge-bg: rgba(18, 22, 32, 0.85);
-  --input-bg: rgba(255, 255, 255, 0.05);
-  --chip-bg: rgba(255, 255, 255, 0.04);
-  --product-img-bg: #11141c;
-  --card-wishlist-bg: rgba(18, 22, 32, 0.75);
-  --quickview-overlay-bg: linear-gradient(to top, rgba(11, 13, 19, 0.95), transparent);
-  --quickview-btn-bg: rgba(255, 255, 255, 0.12);
-  --backdrop-bg: rgba(0, 0, 0, 0.75);
-  --drawer-shadow: -10px 0 40px rgba(0, 0, 0, 0.6);
-  --close-btn-bg: rgba(255, 255, 255, 0.05);
-  --close-btn-hover: rgba(255, 255, 255, 0.12);
-  --track-bg: rgba(255, 255, 255, 0.1);
+  --logo-gradient: linear-gradient(135deg, #F5EFE6 0%, #E2701F 100%);
+  --hero-bg: radial-gradient(circle at 70% 30%, rgba(226, 112, 31, 0.08) 0%, transparent 60%);
+  --hero-title-gradient: linear-gradient(135deg, #F5EFE6 0%, #E2701F 100%);
+  --hero-badge-bg: rgba(28, 24, 21, 0.88);
+  --input-bg: rgba(245, 239, 230, 0.05);
+  --chip-bg: rgba(245, 239, 230, 0.04);
+  --product-img-bg: #1C1815;
+  --card-wishlist-bg: rgba(28, 24, 21, 0.80);
+  --quickview-overlay-bg: linear-gradient(to top, rgba(20, 17, 15, 0.95), transparent);
+  --quickview-btn-bg: rgba(245, 239, 230, 0.12);
+  --backdrop-bg: rgba(0, 0, 0, 0.8);
+  --drawer-shadow: -10px 0 40px rgba(0, 0, 0, 0.7);
+  --close-btn-bg: rgba(245, 239, 230, 0.05);
+  --close-btn-hover: rgba(245, 239, 230, 0.12);
+  --track-bg: rgba(245, 239, 230, 0.1);
   --cart-item-bg: var(--bg-card);
-  --footer-bg: #080a0e;
-  --testimonials-bg: radial-gradient(circle at center, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+  --footer-bg: #0E0C0A;
+  --testimonials-bg: radial-gradient(circle at center, rgba(226, 112, 31, 0.05) 0%, transparent 70%);
 }
 
 /* Reset & Global Base */
@@ -306,7 +322,7 @@ img {
   top: -4px;
   right: -4px;
   background: var(--gold-primary);
-  color: #ffffff;
+  color: #F5EFE6;
   font-size: 0.7rem;
   font-weight: 800;
   width: 20px;
@@ -315,7 +331,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(20, 17, 15, 0.2);
 }
 
 /* Hero Section */
@@ -341,11 +357,11 @@ img {
   gap: 0.5rem;
   padding: 0.4rem 1rem;
   border-radius: var(--radius-full);
-  background: rgba(180, 133, 40, 0.1);
+  background: var(--accent-tint);
   border: 1px solid var(--border-gold);
-  color: var(--gold-primary);
+  color: var(--gold-hover);
   font-size: 0.825rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 1.5rem;
@@ -380,20 +396,21 @@ img {
   justify-content: center;
   gap: 0.6rem;
   padding: 0.9rem 2.2rem;
-  background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-hover) 100%);
-  color: #ffffff;
+  background: var(--gold-primary);
+  color: #F5EFE6;
   font-weight: 700;
   font-size: 0.95rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   border-radius: var(--radius-full);
-  box-shadow: 0 4px 20px var(--gold-glow);
+  box-shadow: 0 4px 18px var(--gold-glow);
   transition: var(--transition-fast);
 }
 .btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 28px rgba(180, 133, 40, 0.35);
-  background: linear-gradient(135deg, var(--gold-hover) 0%, var(--gold-primary) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--gold-glow);
+  background: var(--gold-hover);
+  color: #F5EFE6;
 }
 .btn-outline {
   display: inline-flex;
@@ -401,19 +418,20 @@ img {
   justify-content: center;
   gap: 0.6rem;
   padding: 0.9rem 2rem;
-  border: 1px solid var(--border-gold);
+  border: 1.5px solid var(--text-primary);
   color: var(--text-primary);
   font-weight: 600;
   font-size: 0.95rem;
   border-radius: var(--radius-full);
-  background: var(--bg-surface);
+  background: transparent;
   box-shadow: var(--shadow-sm);
   transition: var(--transition-fast);
 }
 .btn-outline:hover {
-  background: rgba(180, 133, 40, 0.1);
-  border-color: var(--gold-primary);
-  color: var(--gold-primary);
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+  color: var(--bg-main);
+  transform: translateY(-2px);
 }
 
 .hero-image-wrapper {
@@ -453,7 +471,7 @@ img {
   width: 44px;
   height: 44px;
   border-radius: var(--radius-full);
-  background: rgba(180, 133, 40, 0.15);
+  background: var(--accent-tint);
   color: var(--gold-primary);
   display: flex;
   align-items: center;
@@ -493,7 +511,7 @@ img {
 }
 .category-pill.active {
   background: var(--gold-primary);
-  color: #ffffff;
+  color: #F5EFE6;
   font-weight: 700;
   border-color: var(--gold-primary);
   box-shadow: 0 4px 15px var(--gold-glow);
@@ -595,7 +613,7 @@ img {
 .size-chip:hover, .size-chip.active {
   border-color: var(--gold-primary);
   color: var(--gold-primary);
-  background: rgba(180, 133, 40, 0.1);
+  background: var(--accent-tint);
 }
 
 /* Price Range Slider */
@@ -662,7 +680,7 @@ img {
   top: 1rem;
   left: 1rem;
   background: var(--gold-primary);
-  color: #ffffff;
+  color: #F5EFE6;
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.05em;
@@ -670,7 +688,7 @@ img {
   padding: 0.3rem 0.75rem;
   border-radius: var(--radius-full);
   z-index: 2;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(20, 17, 15, 0.2);
 }
 
 .card-wishlist-btn {
@@ -732,10 +750,11 @@ img {
 }
 .btn-card-action.add-cart {
   background: var(--gold-primary);
-  color: #ffffff;
+  color: #F5EFE6;
 }
 .btn-card-action.add-cart:hover {
   background: var(--gold-hover);
+  color: #F5EFE6;
 }
 .btn-card-action.quick-view {
   background: var(--quickview-btn-bg);
@@ -760,7 +779,8 @@ img {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--gold-primary);
+  color: var(--gold-hover);
+  font-weight: 600;
   margin-bottom: 0.4rem;
 }
 .product-name {
@@ -869,7 +889,7 @@ img {
 /* Shipping Progress Bar */
 .shipping-progress-box {
   padding: 1rem 1.5rem;
-  background: rgba(180, 133, 40, 0.05);
+  background: rgba(204, 85, 0, 0.05);
   border-bottom: 1px solid var(--border-subtle);
 }
 .progress-text {
@@ -888,7 +908,7 @@ img {
 }
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--gold-primary), #ffd700);
+  background: linear-gradient(90deg, var(--gold-primary), var(--gold-hover));
   border-radius: var(--radius-full);
   transition: width 0.4s ease;
 }
@@ -965,7 +985,7 @@ img {
 }
 .qty-btn:hover {
   background: var(--gold-primary);
-  color: #ffffff;
+  color: #F5EFE6;
 }
 .qty-num {
   font-size: 0.9rem;
@@ -1005,9 +1025,9 @@ img {
 }
 .btn-apply-promo {
   padding: 0 1.2rem;
-  background: rgba(180, 133, 40, 0.15);
+  background: var(--accent-tint);
   border: 1px solid var(--border-gold);
-  color: var(--gold-primary);
+  color: var(--gold-hover);
   font-weight: 700;
   font-size: 0.8rem;
   border-radius: var(--radius-sm);
@@ -1016,7 +1036,7 @@ img {
 }
 .btn-apply-promo:hover {
   background: var(--gold-primary);
-  color: #ffffff;
+  color: #F5EFE6;
 }
 
 .summary-rows {
@@ -1197,7 +1217,7 @@ img {
 }
 .step-item.active .step-num {
   background: var(--gold-primary);
-  color: #ffffff;
+  color: #F5EFE6;
   font-weight: 800;
 }
 
@@ -1476,7 +1496,7 @@ img {
 
 .nav-auth-btn:hover {
   background: var(--gold-primary);
-  color: var(--text-dark);
+  color: #F5EFE6;
   transform: translateY(-1px);
   box-shadow: 0 4px 15px var(--gold-glow);
 }

@@ -1,65 +1,105 @@
-# Apna Store – Full-Stack E-Commerce Platform
-### Resume Project Description & Technical Documentation
+# Apna Store — Full-Stack Royal Couture E-Commerce Platform
+### Professional Resume Project Description & Technical Interview Guide
 
 ---
 
-## 📌 Summary for Resume (Short & Impactful)
+## 📌 Resume Summary Snippet (Short & High-Impact)
 
-> **Apna Store – Royal Couture E-Commerce Platform** | *Java 17, Spring Boot, REST APIs, JavaScript ES6+, HTML5, CSS3, Maven*
-> * Architected and built a full-stack e-commerce web application with a Java 17 / Spring Boot backend and an interactive responsive frontend.
-> * Designed RESTful APIs for catalog queries, category filtering, live search, and automated order processing with promotional discount validation.
-> * Integrated asynchronous JavaScript (`fetch` API) with client-side state persistence (`localStorage`) and graceful offline fallback handling.
-
----
-
-## 📄 Standard Resume Bullet Points (Ready to Copy-Paste)
-
-### **Option A: Full-Stack Developer Focus**
-* **Architected Full-Stack E-Commerce System**: Built a full-stack luxury retail web application using **Java 17**, **Spring Boot 3.2**, and modern **Vanilla JavaScript (ES6+)**.
-* **Developed RESTful Services**: Created robust Spring REST Controllers (`/api/products`, `/api/orders`) handling product filtering, live search, and order checkout pipelines.
-* **Implemented Automated Order Engine**: Engineered an order service calculating real-time subtotals, promotional code discounts (`APNA20`), shipping logic, and returning printable receipt DTOs.
-* **Designed Dynamic UI/UX**: Crafted responsive glassmorphism UI using modern **CSS3**, custom CSS variables, modal quick-views, and persistent cart/wishlist management via **HTML5 Web Storage**.
-* **Resilient Client Architecture**: Integrated asynchronous API calls in `app.js` with automatic fallback to client-side catalog state when backend API is offline.
+> **Apna Store — Full-Stack E-Commerce Platform** | *Java 17, Spring Boot 3.2, Spring Security (JWT), Spring Data JPA, Hibernate, H2 Database, OpenAPI 3 (Swagger UI), JUnit 5, Mockito, GitHub Actions CI, JavaScript ES6+, HTML5, CSS3*
+> * Architected and deployed a full-stack luxury e-commerce web application featuring stateless JWT authentication (RBAC), declarative Spring Data JPA persistence, and a responsive glassmorphism storefront.
+> * Implemented an order-processing engine enforcing server-side pricing integrity, transactional stock deduction, promotional code validation (`APNA20`), and Bean Validation with unified error responses.
+> * Designed interactive API documentation via SpringDoc OpenAPI 3 with Bearer JWT authorization, and achieved automated test coverage via JUnit 5, Mockito, MockMvc, and a GitHub Actions CI pipeline.
 
 ---
 
-### **Option B: Backend Java / Spring Boot Focus**
-* **Engineered Java Spring Boot REST API**: Developed layered backend architecture (**Controller-Service-Model**) using **Java 17** and **Spring Boot 3.2**.
-* **Built Catalog & Order Pipelines**: Created modular endpoints for catalog queries, category filtering, keyword searching, and POST-based multi-item transaction management.
-* **Implemented Business Logic & Data DTOs**: Formatted strongly-typed JSON DTOs for `OrderRequest` and `OrderResponse`, incorporating discount algorithms and itemized receipts.
-* **Configured Cross-Origin & Static Hosting**: Built custom `WebMvcConfigurer` handling CORS policies and static asset serving for seamless full-stack execution.
+## 📄 Production-Ready Resume Bullet Points
+
+### **Option 1: Full-Stack Software Engineer Focus**
+* **Architected Enterprise Full-Stack Application**: Developed a responsive full-stack e-commerce platform using **Java 17**, **Spring Boot 3.2**, **Spring Security 6**, and modern **Vanilla JavaScript (ES6+)** with a glassmorphism CSS design system.
+* **Secured Authentication & RBAC**: Engineered stateless JWT authentication utilizing **JJWT (0.12)** and **BCrypt** hashing; implemented custom `JwtAuthFilter` and `SecurityFilterChain` enforcing public browsing, customer checkout (`ROLE_USER`), and administrative endpoints (`ROLE_ADMIN`).
+* **Engineered Server-Side Pricing & Inventory Engine**: Designed a transactional checkout pipeline (`@Transactional`) calculating item totals exclusively from database prices, validating promotional discount codes (`APNA20`), and deducting stock with race-condition resilience.
+* **Integrated Interactive API Documentation**: Configured **SpringDoc OpenAPI 3** and **Swagger UI** (`/swagger-ui.html`) with interactive Bearer JWT Authorization, enabling visual testing and documentation of all REST endpoints.
+* **Automated CI/CD & Testing**: Established a **GitHub Actions CI** pipeline for automated Maven compilation, dependency caching, and test execution; authored comprehensive unit, controller (`@WebMvcTest`), and integration tests (`@SpringBootTest`) with an isolated in-memory H2 profile.
+* **Crafted High-Performance Client**: Built single-page checkout, modal quick-views, persistent shopping cart/wishlist management via **HTML5 `localStorage`**, and customer order history views with responsive error alerts.
 
 ---
 
-## 🛠 Tech Stack Breakdown
+### **Option 2: Backend Java / Spring Boot Focus**
+* **Built Layered Spring Boot 3.2 Architecture**: Designed modular **Controller-Service-Repository** layers using **Java 17**, **Spring Data JPA**, **Hibernate**, and **H2 Embedded Database** (file persistence for dev, in-memory for testing).
+* **Implemented Robust Input Validation & Error Handling**: Leveraged **Jakarta Bean Validation** (`@Valid`, `@NotBlank`, `@Email`, `@Min`) alongside a `@RestControllerAdvice` global handler, delivering standardized JSON error formats (`ErrorResponse` with itemized `fieldErrors`).
+* **Secured Endpoints with Spring Security & JWT**: Constructed stateless token-based authorization with custom authentication entry points returning structured JSON for 401 Unauthorized and 403 Forbidden responses.
+* **Built Data Seeding & Relational Schema**: Designed normalized entity relationships (`Category`, `Product`, `User`, `Order`, `OrderItem`) with cascading associations and automated startup database seeding (`CommandLineRunner`).
+* **Delivered 100% Automated Testing Suite**: Authored unit tests with **JUnit 5** and **Mockito**, controller slice tests with **MockMvc**, and full integration flows validating registration, JWT extraction, order placement, and inventory decrement.
 
-| Layer | Technologies Used |
+---
+
+### **Option 3: DevOps, Reliability & API Focus**
+* **Continuous Integration with GitHub Actions**: Authored `.github/workflows/ci.yml` automating JDK 17 setup, Maven dependency caching, and wrapper test runs on every push and pull request to `main`.
+* **Standardized OpenAPI 3 Specification**: Documented RESTful APIs with SpringDoc OpenAPI, exposing `/v3/api-docs` and `/swagger-ui.html` with security scheme annotations for seamless Bearer token testing.
+* **Dual-Profile Database Architecture**: Configured environment-driven properties (`application-dev.properties`, `application-test.properties`, `application-prod.properties`) separating local file-based database execution from ephemeral in-memory test databases.
+* **Resilient Low-Level Knowledge**: Maintained a zero-dependency reference implementation (`legacy/ApnaStoreServer.java`) using raw JDK socket handlers (`com.sun.net.httpserver`) as a benchmark demonstrating the architectural transition to Spring Boot.
+
+---
+
+## 🛠 Comprehensive Tech Stack Breakdown
+
+| Layer | Technologies & Tools |
 |---|---|
-| **Backend Framework** | Java 17, Spring Boot 3.2, Spring MVC, Jackson JSON, Maven (`pom.xml`) |
-| **Frontend Core** | JavaScript (ES6+ Modules), HTML5, CSS3 (Glassmorphism, Flexbox, CSS Grid) |
-| **User Experience** | Font Awesome 6.5, Google Fonts (*Cinzel*, *Plus Jakarta Sans*), Micro-animations |
-| **Data & State Management** | RESTful JSON APIs, In-Memory Repository Service, `localStorage` |
-| **Server & Hosting** | Embedded Tomcat (Port 8080), PowerShell Static Server (`server.ps1`) |
+| **Core Language & Runtime** | Java 17 (OpenJDK / Eclipse Temurin), Node/Static HTTP tooling |
+| **Backend Framework** | Spring Boot 3.2.3, Spring MVC, Spring Data JPA, Hibernate ORM 6.4 |
+| **Security & Authentication** | Spring Security 6, JJWT (io.jsonwebtoken 0.12.6), BCryptPasswordEncoder |
+| **API Documentation** | SpringDoc OpenAPI 3 (`springdoc-openapi-starter-webmvc-ui` 2.3.0), Swagger UI |
+| **Databases & Persistence** | H2 Database Engine (File mode `./data/apnastore` for dev; In-Memory `mem:testdb` for tests) |
+| **Validation & Error Handling** | Jakarta Validation (`@Valid`), Spring Validation Starter, `@RestControllerAdvice` |
+| **Testing & Quality Assurance** | JUnit 5 (Jupiter), Mockito (subclass mock-maker), Spring Boot Starter Test, Spring Security Test, MockMvc |
+| **CI/CD & Build Tools** | GitHub Actions (`.github/workflows/ci.yml`), Apache Maven 3.9, Maven Wrapper (`mvnw` / `mvnw.cmd`) |
+| **Frontend Technologies** | Vanilla JavaScript (ES6+ async/await, Fetch API), HTML5, CSS3 Custom Properties, LocalStorage |
+| **Design & UI Assets** | Glassmorphism, Font Awesome 6.5 Icons, Google Fonts (*Cinzel* serif & *Plus Jakarta Sans*) |
 
 ---
 
-## 💡 Key Features Highlight
+## 🎯 Key Implemented Features
 
-1. **RESTful Catalog & Search APIs**: Fast, filtered product querying by category (`ethnic-women`, `ethnic-men`, `jewelry`, `outerwear`) and keyword search.
-2. **Order & Checkout Processing Engine**: Real-time receipt generator supporting promo codes (`APNA20` for 20% off), tax, and express shipping calculations.
-3. **Cart & Wishlist Persistence**: Client-side state saving allowing persistent cart items across browser sessions.
-4. **Interactive UI/UX**: Quick-view modal dialogs, size/color selectors, toast notifications, responsive mobile drawer, and printable order receipts.
-5. **Fault-Tolerant API Integration**: Asynchronous API communication with graceful client-side fallback handling.
+1. **Stateless JWT Security**:
+   - `POST /api/auth/register`: Hashes passwords using BCrypt, prevents duplicate email registration, and returns signed JWT tokens.
+   - `POST /api/auth/login`: Verifies salted password hashes and issues 24-hour expiration JWT tokens with user email and role claims.
+   - `JwtAuthFilter`: Intercepts incoming requests, validates tokens via `JwtUtil`, extracts the user principal, and sets authentication in `SecurityContextHolder`.
+
+2. **Strict Server-Side Pricing & Stock Deduction**:
+   - Client-submitted prices are completely ignored. Subtotals are calculated solely using verified unit prices from `ProductRepository`.
+   - Inventory availability is validated before order confirmation. If requested quantity exceeds stock, transaction aborts with `InsufficientStockException` (HTTP 409).
+   - Upon confirmation, product inventory is atomically decremented and order items are persisted via JPA cascading.
+
+3. **Promotional Discount Engine**:
+   - Supports promo codes `APNA20` (20% off), `ROYAL20`, `LUMIERE20`, `WELCOME10` (10% off), and `VIP50` (flat ₹50 off).
+   - Applies complimentary shipping on orders over ₹300, or a flat ₹25 shipping fee.
+
+4. **Interactive Swagger UI**:
+   - Access at `http://localhost:8080/swagger-ui.html`.
+   - Click the green **Authorize** button to inject Bearer JWT tokens for executing authenticated calls to `/api/orders` directly in the browser.
+
+5. **Customer Order History ("My Orders")**:
+   - `GET /api/orders/my`: Returns order history for the logged-in customer.
+   - Frontend renders itemized order cards with status badges (`CONFIRMED`), product thumbnails, delivery addresses, and payment breakdowns.
+
+6. **Continuous Integration**:
+   - GitHub Actions workflow (`.github/workflows/ci.yml`) triggers on every push and PR to `main`, validating the build across 21 automated unit, slice, and integration tests.
 
 ---
 
-## ❓ Behavioral & Technical Interview Talking Points
+## 💬 Behavioral & Technical Interview Talking Points
 
-### 1. **Why did you use Spring Boot for the backend?**
-> *"I chose Spring Boot for its enterprise-grade features, Dependency Injection (`@Service`, `@Autowired`), and seamless REST API creation with `@RestController`. It allows scalable business logic separation (Controller-Service-Model architecture) and easy database expansion in the future using Spring Data JPA."*
+### 1. Why use JWT instead of standard HTTP session cookies?
+> *"In modern microservices and multi-client environments, stateless JWTs eliminate server-side session memory overhead and simplify horizontal scaling. With Spring Security and JJWT, the server verifies the cryptographic HMAC-SHA256 signature on every request without needing a shared session store (like Redis), while role claims in the payload enable fast, local permission checks."*
 
-### 2. **How does the Frontend communicate with the Backend?**
-> *"The frontend relies on JavaScript ES6 `async/await` and `fetch` requests to communicate with the Spring Boot REST endpoints on `http://localhost:8080/api/`. I implemented a graceful error-handling mechanism so that if the Java service is offline, the client seamlessly falls back to local catalog data."*
+### 2. How did you ensure financial and inventory integrity during checkout?
+> *"E-commerce frontends can be tampered with in browser DevTools. In `OrderService`, I treat all client-sent prices as untrusted. The service re-queries the database for each product's authoritative price, checks available stock, and decrements stock within a single `@Transactional` method. If any item is out of stock, an `InsufficientStockException` is thrown, rolling back the transaction and returning a clean HTTP 409 Conflict."*
 
-### 3. **How is the Order Processing logic structured?**
-> *"When a user clicks 'Place Order', the client constructs an `OrderRequest` JSON object containing customer details, promo codes, and item array. The Java `OrderService` validates product availability, calculates itemized totals, applies discount rules, generates a unique receipt ID (`APNA-xxxxxx`), and returns an `OrderResponse` object."*
+### 3. How did you design the automated testing strategy?
+> *"I used a pyramid testing strategy:
+> 1. **Unit tests with JUnit 5 & Mockito** for core business logic (`OrderServiceTest`, `AuthServiceTest`) isolating calculation rules and BCrypt hashing.
+> 2. **Controller slice tests with `@WebMvcTest` and MockMvc** (`ProductControllerTest`, `OrderControllerTest`) verifying HTTP status codes, security filters (401 Unauthorized), and Bean Validation error mappings.
+> 3. **End-to-end integration tests with `@SpringBootTest`** (`OrderFlowIntegrationTest`) using an in-memory H2 database under a dedicated `test` profile to test the complete user journey: registration, login, JWT token usage, order placement, and database stock decrement."*
+
+### 4. Why is `legacy/ApnaStoreServer.java` kept in the repository?
+> *"I built `legacy/ApnaStoreServer.java` using raw JDK `com.sun.net.httpserver` without any third-party frameworks. It demonstrates low-level proficiency with raw HTTP byte streams, MIME headers, URI query parsing, and thread pools. It provides a great conversational bridge during interviews to explain why enterprise teams transition to Spring Boot for declarative transactions, dependency injection, and centralized exception handling."*

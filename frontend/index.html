@@ -193,7 +193,7 @@
 
             <!-- Royal Guarantee Badge -->
             <div
-              style="margin-top: 2rem; background: rgba(212, 175, 55, 0.05); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-gold);">
+              style="margin-top: 2rem; background: var(--accent-tint); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-gold);">
               <div style="font-size: 0.85rem; font-weight: 700; color: var(--gold-primary); margin-bottom: 0.5rem;">
                 <i class="fas fa-shield-alt"></i> Silk Mark & Authenticity
               </div>
@@ -348,13 +348,15 @@
           <div class="auth-field-error" id="auth-reg-email-error"></div>
         </div>
         <div class="form-group full" style="margin-bottom:1rem;">
-          <label class="form-label" for="auth-reg-password">Password <span style="color:var(--text-muted);font-size:0.8rem;">(min 6 chars)</span></label>
+          <label class="form-label" for="auth-reg-password">Password <span
+              style="color:var(--text-muted);font-size:0.8rem;">(min 6 chars)</span></label>
           <input type="password" id="auth-reg-password" class="form-input" placeholder="Choose a password" required />
           <div class="auth-field-error" id="auth-reg-password-error"></div>
         </div>
         <div class="form-group full" style="margin-bottom:1.25rem;">
           <label class="form-label" for="auth-reg-confirm-password">Confirm Password</label>
-          <input type="password" id="auth-reg-confirm-password" class="form-input" placeholder="Re-enter password" required />
+          <input type="password" id="auth-reg-confirm-password" class="form-input" placeholder="Re-enter password"
+            required />
           <div class="auth-field-error" id="auth-reg-confirm-password-error"></div>
         </div>
         <div id="auth-reg-error" class="auth-server-error" style="display:none;"></div>
@@ -366,7 +368,8 @@
       <!-- Logged-in panel -->
       <div id="auth-loggedin-panel" style="display:none; text-align:center;">
         <i class="fas fa-user-circle" style="font-size:3.5rem; color:var(--gold-primary); margin-bottom:1rem;"></i>
-        <h4 id="auth-loggedin-name" style="font-family:var(--font-serif); font-size:1.4rem; margin-bottom:0.25rem;"></h4>
+        <h4 id="auth-loggedin-name" style="font-family:var(--font-serif); font-size:1.4rem; margin-bottom:0.25rem;">
+        </h4>
         <p id="auth-loggedin-email" style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1.5rem;"></p>
         <div style="display:flex; flex-direction:column; gap:0.75rem;">
           <button class="btn-primary" id="auth-profile-orders-btn" style="width:100%;">
@@ -496,7 +499,7 @@
       <!-- Step 2 Form -->
       <form id="checkout-step-2" style="display: none;">
         <div
-          style="background: rgba(212, 175, 55, 0.08); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-gold); margin-bottom: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--gold-primary);">
+          style="background: var(--accent-tint); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-gold); margin-bottom: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--gold-primary);">
           <i class="fas fa-lock"></i> 256-Bit Encrypted Simulation Payment
         </div>
         <div class="form-grid">
@@ -550,8 +553,10 @@
       </div>
 
       <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-        <button class="btn-outline" id="print-receipt-btn" style="flex: 1;"><i class="fas fa-print"></i> Print Invoice</button>
-        <button class="btn-primary" id="receipt-view-orders-btn" style="flex: 1;"><i class="fas fa-receipt"></i> View in My Orders</button>
+        <button class="btn-outline" id="print-receipt-btn" style="flex: 1;"><i class="fas fa-print"></i> Print
+          Invoice</button>
+        <button class="btn-primary" id="receipt-view-orders-btn" style="flex: 1;"><i class="fas fa-receipt"></i> View in
+          My Orders</button>
       </div>
     </div>
   </div>
