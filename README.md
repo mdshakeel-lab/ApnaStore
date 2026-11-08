@@ -1,322 +1,262 @@
-# Apna Store — Royal Couture E-Commerce Platform
+# Apna Store
 
 [![CI](https://github.com/mdshakeel-lab/ApnaStore/actions/workflows/ci.yml/badge.svg)](https://github.com/mdshakeel-lab/ApnaStore/actions/workflows/ci.yml)
-![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.3-brightgreen?logo=springboot)
-![Spring Security](https://img.shields.io/badge/Spring%20Security-JWT-blue?logo=springsecurity)
-![License](https://img.shields.io/badge/License-Apache%202.0-lightgrey)
 
-A production-grade, full-stack luxury ethnic couture e-commerce platform built with **Java 17**, **Spring Boot 3.2**, **Spring Security (Stateless JWT)**, **Spring Data JPA**, **H2 Database**, **SpringDoc OpenAPI (Swagger UI)**, and a responsive **Glassmorphism Vanilla JavaScript (ES6+)** frontend.
+A full-stack e-commerce web app for Indian ethnic wear and jewelry, built with Java 17, Spring Boot 3, Spring Security (JWT), Spring Data JPA and a vanilla JavaScript storefront. Spring Boot serves both the REST API and the website from one port.
 
----
+Learning project. Payments are simulated and the app currently runs locally. See [Project status](#project-status).
 
-## 🌟 Overview & Feature List
+| Light theme | Dark theme |
+|---|---|
+| ![Home page, light theme](docs/screenshots/01-home-light.jpg) | ![Home page, dark theme](docs/screenshots/02-home-dark.jpg) |
 
-- **Full-Stack Single-Port Delivery**: Spring Boot serves both the high-performance REST API and the static web storefront (`index.html`, `styles.css`, `app.js`) on port `8080`.
-- **Interactive Swagger UI & OpenAPI 3**: Complete interactive API documentation at `/swagger-ui.html` with built-in **"Authorize"** Bearer JWT authentication support.
-- **Stateless Authentication with JWT**: Secure registration and login using BCrypt password hashing (`BCryptPasswordEncoder`) and signed HMAC-SHA256 JWT tokens via JJWT 0.12.
-- **Role-Based Access Control (RBAC)**: Public browsing, customer-authenticated checkout (`POST /api/orders`) and personal order history (`GET /api/orders/my`), and admin-restricted catalog modifications (`ROLE_ADMIN`).
-- **Server-Side Pricing & Inventory Integrity**: Item totals are calculated strictly against verified database prices (frontend prices are ignored), coupled with transactional stock deduction (`@Transactional`) that raises `InsufficientStockException` on insufficient inventory.
-- **Promotional Discount Engine**: Validates discount codes on the server (`APNA20` for 20% off, `WELCOME10` for 10% off, `VIP50` for flat ₹50 off, and free shipping over ₹300).
-- **Automated Database Seeding**: Pre-populates 9 luxury ethnic couture items, category hierarchies, and a default administrative account on boot if tables are empty.
-- **Dual H2 Profiles**: Persistent file-based storage for local development (`./data/apnastore`) and an isolated, fast in-memory database (`jdbc:h2:mem:testdb`) for the test profile.
-- **Glassmorphism Storefront UI**: Bespoke luxury aesthetic with dark/light mode toggle, category filtering, instant keyword search, quick-view modals, persistent cart & wishlist via `localStorage`, and customer order history view.
-- **100% Automated Testing**: Unit tests with JUnit 5 & Mockito, WebMvc slice tests with MockMvc, and full end-to-end integration flows.
-- **GitHub Actions CI Pipeline**: Automated Maven compilation and test suite verification on every push and pull request to `main`.
+| Shopping bag with free-shipping progress and promo code field |
+|---|
+| ![Shopping bag](docs/screenshots/03-shopping-bag.jpg) |
 
----
+| Register modal with field validation | My Orders view (orders of the logged-in user) |
+|---|---|
+| ![Register modal](docs/screenshots/04-register.jpg) | ![My Orders view](docs/screenshots/05-my-orders.jpg) |
 
-## 🛠 Tech Stack
+## Features
+
+- **Storefront**: category filters, instant search, product detail view, wishlist, cart drawer, step-by-step checkout, light/dark theme. Cart and wishlist are kept in `localStorage`.
+- **Accounts**: register and log in, then view your own orders under "My Orders". Passwords are hashed with BCrypt and sessions use stateless JWTs.
+- **Server-side order logic**: totals are calculated from database prices (prices sent by the browser are ignored), promo codes are validated on the server, and stock is checked and reduced inside one transaction.
+- **Validation and errors**: request validation with Jakarta Bean Validation and a global exception handler. Every error uses the same JSON shape (`timestamp`, `status`, `message`, `fieldErrors`) with proper 400, 401, 403, 404 and 409 codes.
+- **Database**: Spring Data JPA with H2 (file mode for development, in-memory for tests). A seeder loads 9 products and the categories on first start.
+- **API docs**: interactive Swagger UI with Bearer-token authorization.
+- **Tests**: unit tests (JUnit 5, Mockito), controller tests (MockMvc) and an end-to-end flow test.
+
+> **Promo codes** (checked on the server): `APNA20`, `ROYAL20`, `LUMIERE20` give 20% off, `WELCOME10` gives 10% off, `ROYAL50` and `VIP50` give a flat 50 off. Shipping is free when the subtotal is above 300, otherwise 25.
+
+## Tech stack
 
 | Layer | Technologies |
 |---|---|
-| **Backend Framework** | Java 17, Spring Boot 3.2.3, Spring MVC, Spring Data JPA, Hibernate ORM |
-| **Security & Auth** | Spring Security 6, JJWT (io.jsonwebtoken 0.12.6), BCrypt Password Hashing |
-| **API Documentation** | SpringDoc OpenAPI 3 (`springdoc-openapi-starter-webmvc-ui` 2.3.0), Swagger UI |
-| **Databases** | H2 Embedded Database (File mode for dev persistence; In-memory for tests) |
-| **Validation** | Jakarta Bean Validation (`spring-boot-starter-validation`, Hibernate Validator) |
-| **Build & CI/CD** | Apache Maven 3.9, Maven Wrapper (`mvnw` / `mvnw.cmd`), GitHub Actions CI |
-| **Automated Testing** | JUnit 5 Jupiter, Mockito, Spring Boot Starter Test, Spring Security Test, MockMvc |
-| **Frontend** | Vanilla JavaScript (ES6+), HTML5, CSS3 Custom Properties (Glassmorphism), Font Awesome 6.5, Google Fonts (*Cinzel*, *Plus Jakarta Sans*) |
+| Backend | Java 17, Spring Boot 3.2.3, Spring MVC, Spring Data JPA (Hibernate) |
+| Security | Spring Security 6, JJWT 0.12.6, BCrypt |
+| Database | H2 (file mode for dev, in-memory for tests) |
+| API docs | springdoc-openapi 2.3.0 (Swagger UI) |
+| Validation | Jakarta Bean Validation |
+| Build | Maven (Maven Wrapper included) |
+| Testing | JUnit 5, Mockito, Spring Boot Test, Spring Security Test, MockMvc |
+| Frontend | Vanilla JavaScript (ES6 modules), HTML5, CSS custom properties, Font Awesome, Google Fonts (Cinzel, Plus Jakarta Sans) |
 
----
-
-## 🏛 System Architecture
+## Architecture
 
 ```mermaid
 flowchart TD
-    subgraph Client["Frontend Client (Browser)"]
-        UI["Storefront UI (HTML5 / Glassmorphism CSS3)"]
-        JS["Client Application (app.js / ES6)"]
-        Storage["Local Storage (JWT Token, User, Cart, Wishlist)"]
-        UI <--> JS
-        JS <--> Storage
+    subgraph Browser["Browser: HTML, CSS, JavaScript"]
+        UI["Storefront UI"]
     end
 
-    subgraph Security["Spring Security & Auth Layer"]
-        Filter["SecurityFilterChain"]
-        JWT["JwtAuthFilter (Bearer Token Extractor)"]
-        JwtUtil["JwtUtil (HMAC-SHA256 Token Provider)"]
-        PwdEncoder["BCryptPasswordEncoder"]
-        Filter --> JWT
-        JWT --> JwtUtil
+    subgraph Server["Spring Boot web server"]
+        Security["Spring Security + JwtAuthFilter"]
+        Controllers["Controllers: Auth, Product, Order"]
+        Services["Services"]
+        Repos["Spring Data JPA repositories"]
     end
 
-    subgraph Controllers["REST Controller Layer"]
-        AuthCtrl["AuthController (/api/auth)"]
-        ProdCtrl["ProductController (/api/products)"]
-        OrderCtrl["OrderController (/api/orders)"]
-        Swagger["Swagger UI / OpenAPI (/swagger-ui.html)"]
-    end
+    DB[("H2 database")]
 
-    subgraph Services["Service Layer (Business Logic)"]
-        AuthSvc["AuthService (Registration & Login)"]
-        ProdSvc["ProductService (Catalog & Pagination)"]
-        OrderSvc["OrderService (Pricing, Promo & Stock)"]
-    end
-
-    subgraph Repositories["Data Access Layer (Spring Data JPA)"]
-        UserRepo["UserRepository"]
-        CatRepo["CategoryRepository"]
-        ProdRepo["ProductRepository"]
-        OrderRepo["OrderRepository"]
-        ItemRepo["OrderItemRepository"]
-    end
-
-    subgraph Database["Database Storage"]
-        H2Dev["H2 File Database (./data/apnastore)"]
-        H2Test["H2 In-Memory Database (mem:testdb)"]
-    end
-
-    JS -- "HTTP / JSON API Requests" --> Filter
-    Filter -- "PermitAll" --> Swagger
-    Filter -- "PermitAll" --> AuthCtrl
-    Filter -- "PermitAll (GET)" --> ProdCtrl
-    Filter -- "Bearer JWT Required" --> OrderCtrl
-    Filter -- "ROLE_ADMIN Required (POST/PUT/DELETE)" --> ProdCtrl
-
-    AuthCtrl --> AuthSvc
-    ProdCtrl --> ProdSvc
-    OrderCtrl --> OrderSvc
-
-    AuthSvc --> UserRepo & PwdEncoder & JwtUtil
-    ProdSvc --> ProdRepo & CatRepo
-    OrderSvc --> OrderRepo & ItemRepo & ProdRepo & UserRepo
-
-    UserRepo & CatRepo & ProdRepo & OrderRepo & ItemRepo --> H2Dev
-    UserRepo & CatRepo & ProdRepo & OrderRepo & ItemRepo -.-> H2Test
+    UI -- "REST + JWT" --> Security
+    UI -. "static files" .-> Server
+    Security --> Controllers
+    Controllers --> Services
+    Services --> Repos
+    Repos --> DB
 ```
 
----
+Requests go through the JWT filter, then a controller, a service (business rules, transactions) and a repository. The same Spring Boot server also serves the files in `frontend/`.
 
-## 🗄 Entity Relationship (ER) Diagram
+## Data model
 
 ```mermaid
 erDiagram
-    CATEGORY ||--o{ PRODUCT : contains
-    USER ||--o{ ORDER : places
-    ORDER ||--|{ ORDER_ITEM : includes
-    PRODUCT ||--o{ ORDER_ITEM : ordered_in
+    CATEGORIES ||--o{ PRODUCTS : contains
+    USERS ||--o{ ORDERS : places
+    ORDERS ||--|{ ORDER_ITEMS : has
+    PRODUCTS ||--o{ ORDER_ITEMS : "ordered as"
 
-    CATEGORY {
-        string id PK "e.g. ethnic-women"
-        string name "Category Display Name"
-        int itemCount "Total Products"
+    CATEGORIES {
+        string id PK
+        string name
     }
 
-    PRODUCT {
-        string id PK "e.g. prod-ind-01"
-        string category_id FK "References CATEGORY(id)"
-        string name "Product Title"
-        string gender "women / men / unisex"
-        double price "Database Unit Price"
-        double originalPrice "MRP Strikethrough"
-        int stock "Available Inventory"
-        double rating "Average Star Rating"
-        int reviewCount "Total Reviews"
-        string imageUrl "Primary Photo URL"
-        string secondaryImage "Secondary Angle URL"
-        string badge "e.g. Royal Heritage"
-        boolean isFeatured "Featured Flag"
+    PRODUCTS {
+        string id PK
+        string name
+        double price
+        int stock
     }
 
-    USER {
-        bigint id PK "Auto-generated ID"
-        string name "Full Name"
-        string email UK "Unique Email Address"
-        string passwordHash "BCrypt Salted Hash"
-        string role "USER or ADMIN"
-        timestamp createdAt "Registration Timestamp"
+    USERS {
+        long id PK
+        string name
+        string email UK
+        string password_hash
+        string role
     }
 
-    ORDER {
-        bigint id PK "Auto-generated ID"
-        string orderNumber UK "e.g. APNA-748291"
-        bigint user_id FK "References USER(id), Nullable"
-        string customerName "Delivery Recipient"
-        string email "Contact Email"
-        string phone "Contact Phone"
-        string address "Shipping Address"
-        string city "Destination City"
-        string postalCode "Postal / ZIP Code"
-        double subtotal "Sum of DB Prices * Qty"
-        double discount "Discount Applied"
-        double shippingFee "Calculated Shipping"
-        double totalAmount "Final Amount Charged"
-        string status "CONFIRMED / DELIVERED"
-        string paymentMethod "Credit Card, UPI, etc."
-        string promoCode "Promo Code Applied"
-        timestamp createdAt "Order Creation Timestamp"
+    ORDERS {
+        long id PK
+        string order_number UK
+        string customer_name
+        double total_amount
+        string status
     }
 
-    ORDER_ITEM {
-        bigint id PK "Auto-generated ID"
-        bigint order_id FK "References ORDER(id)"
-        string product_id FK "References PRODUCT(id)"
-        int quantity "Item Quantity"
-        double unitPrice "Locked Unit Price at Purchase"
-        string selectedSize "Chosen Size (XS-Custom)"
-        string selectedColor "Chosen Color Variant"
+    ORDER_ITEMS {
+        long id PK
+        int quantity
+        double unit_price
+        string selected_size
+        string selected_color
     }
 ```
 
----
-
-## 📡 REST API Reference
+## API reference
 
 | Method | Endpoint | Access | Description |
 |---|---|---|---|
-| `POST` | `/api/auth/register` | **Public** | Register a new user account and receive a JWT token |
-| `POST` | `/api/auth/login` | **Public** | Authenticate credentials and receive a JWT token |
-| `GET` | `/api/products` | **Public** | List products (supports `category`, `q`, `page`, `size`, `sort`) |
-| `GET` | `/api/products/{id}` | **Public** | Retrieve single product details by ID |
-| `GET` | `/api/products/categories` | **Public** | Retrieve category listing and item counts |
-| `POST` | `/api/orders` | **Bearer Token** | Submit an order; validates stock, prices from DB, applies promo |
-| `GET` | `/api/orders/{id}` | **Bearer Token** | Look up order status by order number or numeric ID |
-| `GET` | `/api/orders/my` | **Bearer Token** | Fetch all orders belonging to the logged-in user |
-| `POST` | `/api/products` | **Admin Only** | Add a new product to the catalog |
-| `PUT` | `/api/products/{id}` | **Admin Only** | Update an existing product |
-| `DELETE` | `/api/products/{id}` | **Admin Only** | Delete a product from the catalog |
-| `GET` | `/swagger-ui.html` | **Public** | Interactive Swagger UI API documentation |
-| `GET` | `/v3/api-docs` | **Public** | OpenAPI 3 JSON specification |
+| `POST` | `/api/auth/register` | Public | Create an account and receive a JWT |
+| `POST` | `/api/auth/login` | Public | Log in and receive a JWT |
+| `GET` | `/api/products` | Public | List products. Optional params: `category`, `q`, `page`, `size`, `sort` |
+| `GET` | `/api/products/{id}` | Public | Get one product |
+| `GET` | `/api/products/categories` | Public | List categories |
+| `POST` | `/api/orders` | Bearer token | Place an order (prices and promo are calculated on the server) |
+| `GET` | `/api/orders/{id}` | Bearer token | Get an order by order number |
+| `GET` | `/api/orders/my` | Bearer token | List the logged-in user's orders |
+| `GET` | `/swagger-ui.html` | Public | Swagger UI |
+| `GET` | `/v3/api-docs` | Public | OpenAPI JSON |
 
----
+Send the token as `Authorization: Bearer <token>`.
 
-## 🚀 Getting Started
+## Getting started
 
-### Prerequisites
-- **Java JDK 17** or newer installed (`java -version`)
-- Git installed (`git --version`)
-
-### 1. Configure Environment Variables
-Copy `.env.example` to `.env` or set environment variables in your terminal:
+Requirements: JDK 17 or newer and Git.
 
 ```bash
-# Copy template
-cp .env.example .env
+git clone https://github.com/mdshakeel-lab/ApnaStore.git
+cd ApnaStore/backend
 ```
 
-Environment variables supported by `application-dev.properties` and `application-prod.properties`:
+> Run it from the `backend` folder, because the server looks for the `frontend` folder next to it.
 
-| Variable | Description | Default (Dev Profile) |
-|---|---|---|
-| `APNASTORE_JWT_SECRET` | Secret key for signing HMAC-SHA256 tokens ($\ge 64$ chars) | Built-in dev fallback |
-| `APNASTORE_JWT_EXPIRY_MS` | JWT expiration duration in milliseconds | `86400000` (24 hours) |
-| `ADMIN_SEED_PASSWORD` | Password for the auto-seeded `admin@apnastore.com` account | `Admin@Store2026` |
-| `DB_URL` / `DB_USERNAME` / `DB_PASSWORD` | External MySQL database connection *(prod profile only)* | Sourced via env |
-
-To set them in PowerShell:
 ```powershell
-$env:APNASTORE_JWT_SECRET="your-secure-random-64-character-string-for-hmac-sha-256-signing"
-$env:ADMIN_SEED_PASSWORD="YourStrongAdminPassword2026!"
-```
-
-To set them in Linux/macOS Bash:
-```bash
-export APNASTORE_JWT_SECRET="your-secure-random-64-character-string-for-hmac-sha-256-signing"
-export ADMIN_SEED_PASSWORD="YourStrongAdminPassword2026!"
-```
-
-### 2. Run the Application
-
-#### Option A: Quick Launch Scripts
-- **Windows (1-Click)**: Double-click `start-store.bat` or `run.bat`
-- **PowerShell**: `.\start-store.ps1`
-
-#### Option B: Maven Wrapper (Command Line)
-```bash
-# Navigate to the backend directory:
-cd backend
-
-# Windows:
+# Windows PowerShell
 .\mvnw.cmd spring-boot:run
+```
 
-# Linux / macOS:
+```bash
+# Linux / macOS
 ./mvnw spring-boot:run
 ```
 
-### 3. Access Default URLs
+On Windows you can also double-click `start-store.bat` in the project root.
 
-- **Storefront UI**: [http://localhost:8080/](http://localhost:8080/)
-- **Swagger UI (Interactive API Docs)**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
-- **OpenAPI Specification**: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
-- **H2 Web Console**: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
-  - **JDBC URL**: `jdbc:h2:file:./data/apnastore`
-  - **User Name**: `sa`
-  - **Password**: *(leave blank)*
+Then open:
 
-> **Testing with Swagger UI**:
-> 1. Open [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html).
-> 2. Execute `POST /api/auth/login` with `{"email": "admin@apnastore.com", "password": "Admin@Store2026"}`.
-> 3. Copy the returned `token`.
-> 4. Click the green **Authorize 🔓** button at the top, paste the token, and click **Authorize**.
-> 5. You can now execute protected endpoints like `POST /api/orders` directly from Swagger UI!
+| What | URL |
+|---|---|
+| Storefront | http://localhost:8080/ |
+| Swagger UI | http://localhost:8080/swagger-ui.html |
+| H2 console | http://localhost:8080/h2-console |
 
----
+H2 console login: JDBC URL `jdbc:h2:file:./data/apnastore`, user `sa`, empty password.
 
-## 🧪 Running Automated Tests
+## Configuration
 
-The project includes unit, controller, and integration tests using JUnit 5, Mockito, and Spring Boot Test with an isolated in-memory H2 test profile (`application-test.properties`):
+The app works with built-in development defaults. To use your own values, set these environment variables (see `.env.example`):
+
+| Variable | Purpose |
+|---|---|
+| `APNASTORE_JWT_SECRET` | Key used to sign JWTs, at least 64 characters |
+| `APNASTORE_JWT_EXPIRY_MS` | Token lifetime in milliseconds (default 24 hours) |
+| `ADMIN_SEED_PASSWORD` | Password of the seeded admin account |
+
+```powershell
+$env:APNASTORE_JWT_SECRET="replace-with-your-own-random-string-of-at-least-64-characters"
+$env:ADMIN_SEED_PASSWORD="choose-a-strong-password"
+```
+
+The built-in defaults are for local development only. Never use them for anything public.
+
+## Try the API in Swagger
+
+1. Open http://localhost:8080/swagger-ui.html.
+2. Run `POST /api/auth/register` with a name, email and password (at least 6 characters). Copy the token from the response.
+3. Click **Authorize**, paste the token and confirm.
+4. Run `POST /api/orders` or `GET /api/orders/my`.
+
+## Running the tests
 
 ```bash
 cd backend
-
-# Windows:
-.\mvnw.cmd test
-
-# Linux / macOS:
-./mvnw test
+./mvnw test   # Windows: .\mvnw.cmd test
 ```
 
-### Test Coverage Highlights:
-- **`OrderServiceTest`**: Validates server-side subtotal pricing against database prices, `APNA20` 20% discount calculation, `InsufficientStockException` on depleted stock, transactional stock decrement, and empty `Optional` for missing orders.
-- **`AuthServiceTest`**: Validates BCrypt password hashing before database write, duplicate email rejection (`BadRequestException`), and invalid password login rejection.
-- **`ProductControllerTest`**: Validates `GET /api/products` returns HTTP 200 with catalog payload.
-- **`OrderControllerTest`**: Validates unauthenticated `POST /api/orders` returns HTTP 401, invalid payloads return HTTP 400 with itemized `fieldErrors`, and non-existent orders return HTTP 404 in standard `ErrorResponse` format.
-- **`OrderFlowIntegrationTest`**: Validates full customer journey end-to-end: registers a user, logs in, extracts JWT, places an order with Bearer token, verifies database persistence and stock decrement.
+Tests use a separate in-memory H2 database, so they never touch your `data/` folder.
+
+- **Service tests**: server-side pricing, the 20% promo, insufficient stock, stock reduction, password hashing, duplicate email, wrong password.
+- **Controller tests (MockMvc)**: 401 without a token, 400 with `fieldErrors` for invalid input, 404 in the standard error format, product list returns 200.
+- **Integration test**: register, log in, place an order with the token, then check the saved order and the reduced stock.
+
+## Project structure
+
+```text
+ApnaStore/
+├── backend/
+│   ├── pom.xml
+│   ├── mvnw, mvnw.cmd
+│   └── src/
+│       ├── main/java/com/apnastore/
+│       │   ├── config/          # security, CORS, static files, OpenAPI, data seeder
+│       │   ├── controller/      # Auth, Product, Order
+│       │   ├── service/         # business logic
+│       │   ├── repository/      # Spring Data JPA
+│       │   ├── model/           # JPA entities
+│       │   ├── dto/             # request and response objects
+│       │   ├── exception/       # custom exceptions + global handler
+│       │   └── security/        # JWT utility, filter, user details
+│       └── test/                # unit, controller and integration tests
+├── frontend/                    # index.html, styles.css, app.js, data.js, assets/
+├── legacy/                      # ApnaStoreServer.java (framework-free HTTP server)
+├── docs/                        # screenshots and project notes
+├── .env.example
+└── start-store.bat / run.bat / start-store.ps1 / stop-store.bat
+```
+
+## Project status
+
+This is a learning project, and some parts are intentionally simple:
+
+- **Payments are simulated**. The card form in checkout is a demo, and card details are never sent to the server.
+- **Runs locally on H2**. A MySQL production profile, Docker and cloud deployment are planned but not finished.
+- **No admin screens yet**. The `ADMIN` role exists and is used in the security rules, but product-management endpoints are not implemented.
+- **Known improvements**: restrict order lookup to the order's owner, lock stock rows so simultaneous orders cannot oversell, store money as `BigDecimal` instead of `double`, and move the JWT out of `localStorage` for a real deployment.
+
+## Roadmap
+
+- [ ] Docker and docker-compose with MySQL
+- [ ] Deploy to AWS (EC2 or Elastic Beanstalk with RDS)
+- [ ] Admin endpoints for managing products
+- [ ] Razorpay test-mode payments
+- [x] GitHub Actions workflow for build and tests
+
+## What I learned
+
+- How a JWT login flow works end to end with Spring Security: filter, token, roles, 401 versus 403
+- Layering a Spring Boot app into controller, service and repository, and keeping DTOs separate from entities
+- Moving business rules (pricing, promo, stock) to the server instead of trusting the browser
+- Validation and a global exception handler for consistent API errors
+- Writing unit, slice and integration tests with isolated test data
+
+## Legacy server
+
+`legacy/ApnaStoreServer.java` is the first version of the backend: a small HTTP server written with only the JDK (`com.sun.net.httpserver`). It is kept as a reference for how routing, headers and JSON handling work underneath a framework.
 
 ---
 
-## 📸 Screenshots
-
-| Feature | Preview |
-|---|---|
-| **Storefront & Catalog** | ![Storefront Screenshot Placeholder](docs/screenshots/storefront.png) *(Modern glassmorphism hero banner, catalog filter pills, search bar, and cart drawer)* |
-| **Authentication Modal** | ![Auth Modal Screenshot Placeholder](docs/screenshots/auth_modal.png) *(Tabbed Sign In and Register forms with real-time validation and error alert banners)* |
-| **Interactive Checkout** | ![Checkout Screenshot Placeholder](docs/screenshots/checkout.png) *(Step-by-step checkout with server-validated APNA20 promo code and address capture)* |
-| **My Orders View** | ![My Orders Screenshot Placeholder](docs/screenshots/my_orders.png) *(Customer order cards showing status badges, line items, and financial summary)* |
-| **Swagger UI Documentation** | ![Swagger UI Screenshot Placeholder](docs/screenshots/swagger_ui.png) *(Interactive OpenAPI 3 UI with Bearer JWT Authorization lock)* |
-
----
-
-## 🔮 Future Improvements
-
-1. **Docker Containerization**: Multi-stage `Dockerfile` creating a lightweight JRE 17 container and `docker-compose.yml` orchestrating the Spring Boot service alongside a MySQL 8 container.
-2. **Cloud Deployment (AWS)**: CI/CD deployment pipeline to AWS ECS Fargate or EC2 with an AWS RDS MySQL managed instance and CloudFront CDN for static assets.
-3. **Payment Gateway Integration (Razorpay Test Mode)**: Server-side Razorpay order creation (`/api/payments/create-order`) and cryptographic webhook signature verification (`razorpay_signature`) for mock card, UPI, and net-banking transactions.
-
----
-
-## 🏛 Legacy Architecture Reference
-
-The project retains [`legacy/ApnaStoreServer.java`](legacy/ApnaStoreServer.java), a zero-dependency server implemented using raw JDK `com.sun.net.httpserver`. It serves as an architectural interview comparison to demonstrate low-level HTTP socket streaming and URI parsing versus enterprise Spring Boot abstractions.
+Built by [Shakeel Gulamalisha](https://github.com/mdshakeel-lab).
